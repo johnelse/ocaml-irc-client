@@ -1,0 +1,8 @@
+name: irc-client
+version: 1.0.0
+synopsis: IRC client library
+obuild-ver: 1
+
+library irc-client
+  src-dir: lib
+  modules: irc_client, irc_transport
