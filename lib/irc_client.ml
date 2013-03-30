@@ -9,7 +9,9 @@ module Make(Io: Irc_transport.IO) = struct
   }
 
   let send_raw connection data =
-    Io.write connection.sock (Printf.sprintf "%s\r\n" data)
+    let formatted_data = Printf.sprintf "%s\r\n" data in
+    let len = String.length formatted_data in
+    Io.buffered_write connection.sock formatted_data 0 len
 
   let send_join connection channel =
     send_raw connection (Printf.sprintf "JOIN %s" channel)

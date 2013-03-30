@@ -6,3 +6,14 @@ obuild-ver: 1
 library irc-client
   src-dir: lib
   modules: irc_client, irc_transport
+
+library irc-client.lwt
+  src-dir: lwt
+  modules: irc_client_lwt
+  pp: camlp4o
+  build-deps: irc-client, lwt, lwt.unix, lwt.syntax
+
+library irc-client.unix
+  src-dir: unix
+  modules: irc_client_unix
+  build-deps: irc-client

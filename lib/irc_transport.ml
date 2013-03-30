@@ -11,6 +11,6 @@ module type IO = sig
   val socket : socket_domain -> socket_type -> int -> file_descr
   val connect : file_descr -> sockaddr -> unit t
 
-  val read : file_descr -> string t
-  val write : file_descr -> string -> unit t
+  val buffered_read : file_descr -> string -> int -> int -> unit t
+  val buffered_write : file_descr -> string -> int -> int -> unit t
 end
