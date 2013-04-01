@@ -30,4 +30,7 @@ module Make(Io: Irc_transport.IO) = struct
 
   let send_quit connection =
     send_raw connection "QUIT"
+
+  let send_user connection username mode realname =
+    send_raw connection (Printf.sprintf "USER %s %i * :%s" username mode realname)
 end
