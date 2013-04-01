@@ -3,17 +3,17 @@ version: 0.1.0
 synopsis: IRC client library
 obuild-ver: 1
 
-library irc-client
+library irc_client
   src-dir: lib
   modules: irc_client, irc_transport
 
-library irc-client.lwt
+library irc_client.lwt
   src-dir: lwt
   modules: irc_client_lwt
   pp: camlp4o
-  build-deps: irc-client, lwt, lwt.unix, lwt.syntax
+  build-deps: irc_client, lwt, lwt.syntax, lwt.unix
 
-library irc-client.unix
+library irc_client.unix
   src-dir: unix
   modules: irc_client_unix
-  build-deps: irc-client
+  build-deps: irc_client
