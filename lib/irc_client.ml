@@ -27,4 +27,7 @@ module Make(Io: Irc_transport.IO) = struct
 
   let send_privmsg connection target message =
     send_raw connection (Printf.sprintf "PRIVMSG %s %s" target message)
+
+  let send_quit connection =
+    send_raw connection "QUIT"
 end
