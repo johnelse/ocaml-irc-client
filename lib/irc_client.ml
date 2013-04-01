@@ -1,9 +1,4 @@
 module Make(Io: Irc_transport.IO) = struct
-  type auth_t = {
-    username: string;
-    password: string;
-  }
-
   type connection_t = {
     sock: Io.file_descr;
   }
