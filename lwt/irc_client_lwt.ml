@@ -3,13 +3,15 @@ module Io : Irc_transport.IO = struct
   let (>>=) = Lwt.bind
   let return = Lwt.return
 
-  type socket_domain = Lwt_unix.socket_domain
-  type socket_type = Lwt_unix.socket_type
-  type sockaddr = Lwt_unix.sockaddr
   type file_descr = Lwt_unix.file_descr
 
-  let socket = Lwt_unix.socket
-  let connect = Lwt_unix.connect
+  let open_socket server port =
+    let sock = Lwt_unix.socket Lwt_unix.PF_INET Lwt_unix.SOCK_STREAM 0 in
+    let addr = Lwt_unix.ADDR_INET (Unix.inet_addr_of_string server, port) in
+    lwt () = Lwt_unix.connect sock addr in
+    return sock
+
+  let close_socket = Lwt_unix.close
 
   let rec buffered_read fd str offset length =
     if length = 0 then return () else

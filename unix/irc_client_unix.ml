@@ -3,13 +3,15 @@ module Io : Irc_transport.IO = struct
   let (>>=) x f = f x
   let return x = x
 
-  type socket_domain = Unix.socket_domain
-  type socket_type = Unix.socket_type
-  type sockaddr = Unix.sockaddr
   type file_descr = Unix.file_descr
 
-  let socket = Unix.socket
-  let connect = Unix.connect
+  let open_socket server port =
+    let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
+    let addr = Unix.ADDR_INET (Unix.inet_addr_of_string server, port) in
+    Unix.connect sock addr;
+    sock
+
+  let close_socket = Unix.close
 
   let rec buffered_read fd str offset length =
     if length = 0 then () else
