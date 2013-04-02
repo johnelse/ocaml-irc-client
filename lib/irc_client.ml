@@ -29,4 +29,14 @@ module Make(Io: Irc_transport.IO) = struct
   let send_user ~connection ~username ~mode ~realname =
     send_raw ~connection
       ~data:(Printf.sprintf "USER %s %i * :%s" username mode realname)
+
+  open Io
+
+  let connect ~server ~port ~username ~mode ~realname ~nick ~password =
+    Io.open_socket server port >>= (fun sock ->
+      let connection = {sock = sock} in
+      send_pass ~connection ~password
+      >>= (fun () -> send_nick ~connection ~nick)
+      >>= (fun () -> send_user ~connection ~username ~mode ~realname)
+      >>= (fun () -> return connection))
 end
