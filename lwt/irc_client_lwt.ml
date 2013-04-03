@@ -1,4 +1,4 @@
-module Io : Irc_transport.IO = struct
+module Io = struct
   type 'a t = 'a Lwt.t
   let (>>=) = Lwt.bind
   let return = Lwt.return

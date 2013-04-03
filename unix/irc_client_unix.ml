@@ -1,4 +1,4 @@
-module Io : Irc_transport.IO = struct
+module Io = struct
   type 'a t = 'a
   let (>>=) x f = f x
   let return x = x
