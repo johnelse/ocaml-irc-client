@@ -8,6 +8,6 @@ module type IO = sig
   val open_socket : string -> int -> file_descr t
   val close_socket : file_descr -> unit t
 
-  val buffered_read : file_descr -> string -> int -> int -> unit t
-  val buffered_write : file_descr -> string -> int -> int -> unit t
+  val read : file_descr -> string -> int -> int -> int t
+  val write : file_descr -> string -> int -> int -> int t
 end

@@ -13,17 +13,8 @@ module Io : Irc_transport.IO = struct
 
   let close_socket = Lwt_unix.close
 
-  let rec buffered_read fd str offset length =
-    if length = 0 then return () else
-      lwt chars_read = Lwt_unix.read fd str offset length in
-      if chars_read = 0
-      then Lwt.fail End_of_file
-      else buffered_read fd str (offset + chars_read) (length - chars_read)
-
-  let rec buffered_write fd str offset length =
-    if length = 0 then return () else
-      lwt chars_written = Lwt_unix.write fd str offset length in
-      buffered_write fd str (offset + chars_written) (length - chars_written)
+  let read = Lwt_unix.read
+  let write = Lwt_unix.write
 end
 
 module Client = Irc_client.Make(Io)

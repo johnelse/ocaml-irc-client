@@ -3,10 +3,20 @@ module Make(Io: Irc_transport.IO) = struct
     sock: Io.file_descr;
   }
 
+  open Io
+
+  let rec really_write ~connection ~data ~offset ~length =
+    if length = 0 then return () else
+      Io.write connection.sock data offset length
+      >>= (fun chars_written ->
+        really_write ~connection ~data
+          ~offset:(offset + chars_written)
+          ~length:(length - chars_written))
+
   let send_raw ~connection ~data =
     let formatted_data = Printf.sprintf "%s\r\n" data in
-    let len = String.length formatted_data in
-    Io.buffered_write connection.sock formatted_data 0 len
+    let length = String.length formatted_data in
+    really_write ~connection ~data:formatted_data ~offset:0 ~length
 
   let send_join ~connection ~channel =
     send_raw ~connection ~data:(Printf.sprintf "JOIN %s" channel)
@@ -29,8 +39,6 @@ module Make(Io: Irc_transport.IO) = struct
   let send_user ~connection ~username ~mode ~realname =
     send_raw ~connection
       ~data:(Printf.sprintf "USER %s %i * :%s" username mode realname)
-
-  open Io
 
   let connect ~server ~port ~username ~mode ~realname ~nick ~password =
     Io.open_socket server port >>= (fun sock ->
