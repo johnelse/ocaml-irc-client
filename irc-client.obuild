@@ -5,7 +5,7 @@ obuild-ver: 1
 
 library irc_client
   src-dir: lib
-  modules: irc_client, irc_transport
+  modules: irc_helpers, irc_transport, irc_client
 
 library irc_client.lwt
   src-dir: lwt

@@ -10,4 +10,6 @@ module type IO = sig
 
   val read : file_descr -> string -> int -> int -> int t
   val write : file_descr -> string -> int -> int -> int t
+
+  val iter : ('a -> unit t) -> 'a list -> unit t
 end

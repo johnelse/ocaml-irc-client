@@ -14,4 +14,7 @@ module Make : functor (Io: Irc_transport.IO) ->
 
     val connect : server:string -> port:int -> username:string -> mode:int ->
       realname:string -> nick:string -> password:string -> connection_t Io.t
+
+    val listen : connection:connection_t ->
+      callback:(string -> unit Io.t) -> unit Io.t
   end

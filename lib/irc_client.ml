@@ -47,4 +47,33 @@ module Make(Io: Irc_transport.IO) = struct
       >>= (fun () -> send_nick ~connection ~nick)
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
+
+  let listen ~connection ~callback =
+    let read_length = 1024 in
+    let read_data = String.create read_length in
+    let rec listen' ~buffer =
+      (* Read some data into our string. *)
+      Io.read connection.sock read_data 0 read_length
+      >>= (fun chars_read ->
+        if chars_read = 0 (* EOF from server - we have quit or been kicked. *)
+        then return ()
+        else begin
+          let input = String.sub read_data 0 chars_read in
+          (* Update the buffer and extract the whole lines. *)
+          let whole_lines = Irc_helpers.handle_input ~buffer ~input in
+          (* Handle the whole lines which were read. *)
+          Io.iter
+            (fun line ->
+              if (String.length line > 4) && (String.sub line 0 4 = "PING")
+              then begin
+                (* Handle pings without calling the callback. *)
+                let message = String.sub line 5 (String.length line - 5) in
+                send_pong ~connection ~message
+              end else callback line)
+            whole_lines
+        end)
+      >>= (fun () -> listen' ~buffer)
+    in
+    let buffer = Buffer.create 0 in
+    listen' ~buffer
 end

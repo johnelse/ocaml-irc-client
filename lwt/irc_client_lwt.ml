@@ -15,6 +15,8 @@ module Io = struct
 
   let read = Lwt_unix.read
   let write = Lwt_unix.write
+
+  let iter = Lwt_list.iter_s
 end
 
 module Client = Irc_client.Make(Io)
