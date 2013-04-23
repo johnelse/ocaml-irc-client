@@ -17,3 +17,8 @@ library irc_client.unix
   src-dir: unix
   modules: irc_client_unix
   build-deps: irc_client
+
+test test_parser
+  main: test_parser.ml
+  src-dir: test
+  build-deps: oUnit, irc_client

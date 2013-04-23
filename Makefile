@@ -1,5 +1,5 @@
 dist/build/lib-irc-client/irc-client.cmxa:
-	obuild configure
+	obuild configure --enable-tests
 	obuild build
 
 install:
@@ -11,6 +11,9 @@ install:
 uninstall:
 	ocamlfind remove irc-client
 
-.PHONY: clean
+.PHONY: clean test
 clean:
 	rm -rf dist
+
+test:
+	obuild test
