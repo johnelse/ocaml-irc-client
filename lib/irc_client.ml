@@ -64,12 +64,12 @@ module Make(Io: Irc_transport.IO) = struct
           (* Handle the whole lines which were read. *)
           Io.iter
             (fun line ->
-              if (String.length line > 4) && (String.sub line 0 4 = "PING")
-              then begin
+              match Irc_message.parse line with
+              | Irc_message.Message {Irc_message.command = "PING"; trail = Some trail} ->
                 (* Handle pings without calling the callback. *)
-                let message = String.sub line 5 (String.length line - 5) in
-                send_pong ~connection ~message
-              end else callback line)
+                send_pong ~connection ~message:(":"^trail)
+              | m ->
+                callback m)
             whole_lines
         end)
       >>= (fun () -> listen' ~buffer)
