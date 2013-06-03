@@ -10,7 +10,7 @@ type parse_result =
   | Parse_error of (string * string)
 
 let extract_prefix str =
-  if String.sub str 0 1 = ":"
+  if str.[0] = ':'
   then begin
     let prefix_length = (String.index str ' ') - 1 in
     Some (String.sub str 1 prefix_length),
