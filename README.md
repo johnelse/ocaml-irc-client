@@ -7,7 +7,7 @@ Build dependencies
 * [obuild](https://github.com/vincenthz/obuild)
 * [oUnit](http://ounit.forge.ocamlcore.org/)
 
-The latest tagged version is available via [opam](http://opam.ocamlpro.com): ```opam install irc-client```
+The latest tagged version is available via [opam](http://opam.ocamlpro.com): `opam install irc-client`
 
 Usage
 -----
