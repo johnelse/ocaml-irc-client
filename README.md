@@ -42,7 +42,7 @@ let lwt_main =
   C.connect ~server:"1.2.3.4" ~port:6667 ~username:"demo_irc_bot"
     ~mode:0 ~realname:"Demo IRC bot" ~nick:"demo_irc_bot" ~password:"foo"
   >>= (fun connection ->
-    Lwt_io.printl "Connecting"
+    Lwt_io.printl "Connected"
     >>= (fun () -> C.send_join ~connection ~channel:"#mychannel")
     >>= (fun () -> C.send_privmsg ~connection ~target:"#mychannel"  ~message:"hi")
     >>= (fun () -> C.listen ~connection ~callback)
