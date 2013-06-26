@@ -44,7 +44,7 @@ let lwt_main =
   >>= (fun connection ->
     Lwt_io.printl "Connected"
     >>= (fun () -> C.send_join ~connection ~channel:"#mychannel")
-    >>= (fun () -> C.send_privmsg ~connection ~target:"#mychannel"  ~message:"hi")
+    >>= (fun () -> C.send_privmsg ~connection ~target:"#mychannel" ~message:"hi")
     >>= (fun () -> C.listen ~connection ~callback)
     >>= (fun () -> C.send_quit ~connection))
 
