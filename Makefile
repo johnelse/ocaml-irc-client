@@ -1,5 +1,12 @@
+ocamlfind_check=$(shell ocamlfind query $(1) > /dev/null 2> /dev/null && echo "true")
+
+LWT=$(call ocamlfind_check,lwt)
+ifeq ($(LWT), true)
+	LWT_FLAG=--flag lwt
+endif
+
 dist/build/lib-irc-client/irc-client.cmxa:
-	obuild configure --enable-tests
+	obuild configure --enable-tests $(LWT_FLAG)
 	obuild build
 
 install:
