@@ -1,4 +1,4 @@
-version = "0.1.0"
+version = "0.1.1"
 description = "IRC client library"
 requires = ""
 archive(byte) = "irc_client.cma"
@@ -8,7 +8,7 @@ archive(native, plugin) = "irc_client.cmxs"
 exists_if = "irc_client.cma"
 
 package "lwt" (
-  version = "0.1.0"
+  version = "0.1.1"
   description = "IRC client library for Lwt"
   requires = "irc-client lwt lwt.syntax lwt.unix"
   archive(byte) = "irc_client_lwt.cma"
@@ -19,7 +19,7 @@ package "lwt" (
 )
 
 package "unix" (
-  version = "0.1.0"
+  version = "0.1.1"
   description = "IRC client library for Unix"
   requires = "irc-client"
   archive(byte) = "irc_client_unix.cma"
