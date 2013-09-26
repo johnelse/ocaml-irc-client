@@ -1,6 +1,6 @@
 0.1.1 (25-Sep-2013):
-* conditially compile the Lwt package
-* tidy the string manipulation code
+ * conditially compile the Lwt package
+ * tidy the string manipulation code
 
 0.1.0 (30-Apr-2013):
-* first public release
+ * first public release
