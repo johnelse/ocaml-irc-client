@@ -3,7 +3,7 @@ IRC client library, supporting Lwt and Unix blocking IO.
 Build dependencies
 ------------------
 
-* [lwt](http://ocsigen.org/lwt/)
+* [lwt](http://ocsigen.org/lwt/) (optional)
 * [obuild](https://github.com/vincenthz/obuild)
 * [oUnit](http://ounit.forge.ocamlcore.org/)
 
