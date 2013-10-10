@@ -23,4 +23,4 @@ clean:
 	rm -rf dist
 
 test:
-	obuild test
+	obuild test --output
