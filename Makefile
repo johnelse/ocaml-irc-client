@@ -12,8 +12,8 @@ dist/build/lib-irc-client/irc-client.cmxa:
 install:
 	ocamlfind install irc-client lib/META \
 		$(wildcard dist/build/lib-irc_client/*) \
-		$(wildcard dist/build/lib-irc_client.lwt/*) \
-		$(wildcard dist/build/lib-irc_client.unix/*)
+		$(wildcard dist/build/lib-irc_client_lwt/*) \
+		$(wildcard dist/build/lib-irc_client_unix/*)
 
 uninstall:
 	ocamlfind remove irc-client

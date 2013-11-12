@@ -11,14 +11,14 @@ library irc_client
   src-dir: lib
   modules: irc_helpers, irc_message, irc_transport, irc_client
 
-library irc_client.lwt
+library irc_client_lwt
   buildable: $lwt
   src-dir: lwt
   modules: irc_client_lwt
   pp: camlp4o
   build-deps: irc_client, lwt, lwt.syntax, lwt.unix
 
-library irc_client.unix
+library irc_client_unix
   src-dir: unix
   modules: irc_client_unix
   build-deps: irc_client
