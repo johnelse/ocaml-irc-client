@@ -1,3 +1,7 @@
+0.1.2 (11-Dec-2013):
+ * Make Lwt an optional dependency
+ * Switch build system to oasis
+
 0.1.1 (25-Sep-2013):
  * conditially compile the Lwt package
  * tidy the string manipulation code
