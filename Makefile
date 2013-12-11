@@ -1,26 +1,41 @@
+all: build
+
 ocamlfind_check=$(shell ocamlfind query $(1) > /dev/null 2> /dev/null && echo "true")
 
 LWT=$(call ocamlfind_check,lwt)
 ifeq ($(LWT), true)
-	LWT_FLAG=--flag lwt
+	LWT_FLAG=--enable-lwt
 endif
 
-dist/build/lib-irc-client/irc-client.cmxa:
-	obuild configure --enable-tests $(LWT_FLAG)
-	obuild build
+UNIX_FLAG=--enable-unix
 
-install:
-	ocamlfind install irc-client lib/META \
-		$(wildcard dist/build/lib-irc_client/*) \
-		$(wildcard dist/build/lib-irc_client_lwt/*) \
-		$(wildcard dist/build/lib-irc_client_unix/*)
+TESTS_FLAG=--enable-tests
+
+NAME=irc-client
+J=4
+
+setup.ml: _oasis
+	oasis setup
+
+setup.data: setup.ml
+	ocaml setup.ml -configure $(LWT_FLAG) $(UNIX_FLAG) $(TESTS_FLAG)
+
+build: setup.data setup.ml
+	ocaml setup.ml -build -j $(J)
+
+install: setup.data setup.ml
+	ocaml setup.ml -install
 
 uninstall:
-	ocamlfind remove irc-client
+	ocamlfind remove $(NAME)
 
-.PHONY: clean test
+test: setup.ml build
+	ocaml setup.ml -test
+
+reinstall: setup.ml
+	ocamlfind remove $(NAME) || true
+	ocaml setup.ml -reinstall
+
 clean:
-	rm -rf dist
-
-test:
-	obuild test --output
+	ocamlbuild -clean
+	rm -f setup.data setup.log

@@ -1,3 +1,8 @@
 *.swp
 
-dist
+_build
+oUnit-anon.cache
+setup.data
+setup.log
+
+test_parser.byte

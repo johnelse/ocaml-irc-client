@@ -1,30 +1,32 @@
-version = "0.1.1"
+# OASIS_START
+# DO NOT EDIT (digest: 5733ae64ceba94a923ca8720a9b518da)
+version = "0.1.2"
 description = "IRC client library"
-requires = ""
 archive(byte) = "irc_client.cma"
 archive(byte, plugin) = "irc_client.cma"
 archive(native) = "irc_client.cmxa"
 archive(native, plugin) = "irc_client.cmxs"
 exists_if = "irc_client.cma"
+package "unix" (
+ version = "0.1.2"
+ description = "IRC client library"
+ requires = "irc-client"
+ archive(byte) = "irc_client_unix.cma"
+ archive(byte, plugin) = "irc_client_unix.cma"
+ archive(native) = "irc_client_unix.cmxa"
+ archive(native, plugin) = "irc_client_unix.cmxs"
+ exists_if = "irc_client_unix.cma"
+)
 
 package "lwt" (
-  version = "0.1.1"
-  description = "IRC client library for Lwt"
-  requires = "irc-client lwt lwt.syntax lwt.unix"
-  archive(byte) = "irc_client_lwt.cma"
-  archive(byte, plugin) = "irc_client_lwt.cma"
-  archive(native) = "irc_client_lwt.cmxa"
-  archive(native, plugin) = "irc_client_lwt.cmxs"
-  exists_if = "irc_client_lwt.cma"
+ version = "0.1.2"
+ description = "IRC client library"
+ requires = "irc-client lwt lwt.syntax lwt.unix"
+ archive(byte) = "irc_client_lwt.cma"
+ archive(byte, plugin) = "irc_client_lwt.cma"
+ archive(native) = "irc_client_lwt.cmxa"
+ archive(native, plugin) = "irc_client_lwt.cmxs"
+ exists_if = "irc_client_lwt.cma"
 )
+# OASIS_STOP
 
-package "unix" (
-  version = "0.1.1"
-  description = "IRC client library for Unix"
-  requires = "irc-client"
-  archive(byte) = "irc_client_unix.cma"
-  archive(byte, plugin) = "irc_client_unix.cma"
-  archive(native) = "irc_client_unix.cmxa"
-  archive(native, plugin) = "irc_client_unix.cmxs"
-  exists_if = "irc_client_unix.cma"
-)

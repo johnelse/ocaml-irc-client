@@ -1,0 +1,55 @@
+OASISFormat:  0.3
+Name:         irc-client
+Version:      0.1.2
+Synopsis:     IRC client library
+License:      MIT
+Authors:      various
+Copyrights:   (C) 2013 John Else
+BuildTools:   ocamlbuild
+Plugins:      META (0.3)
+
+Flag lwt
+  Description: build the Lwt library
+  Default: false
+
+Flag unix
+  Description: build the Unix library
+  Default: false
+
+Library irc_client
+  Path: lib
+  Findlibname: irc-client
+  ByteOpt: -bin-annot
+  NativeOpt: -bin-annot
+  Modules: Irc_client, Irc_helpers, Irc_message, Irc_transport
+
+Library irc_client_lwt
+  Build$: flag(lwt)
+  Path: lwt
+  BuildDepends: irc-client, lwt, lwt.syntax, lwt.unix
+  Findlibname: lwt
+  Findlibparent: irc_client
+  ByteOpt: -bin-annot
+  NativeOpt: -bin-annot
+  Modules: Irc_client_lwt
+
+Library irc_client_unix
+  Build$: flag(unix)
+  Path: unix
+  BuildDepends: irc-client
+  Findlibname: unix
+  Findlibparent: irc_client
+  ByteOpt: -bin-annot
+  NativeOpt: -bin-annot
+  Modules: Irc_client_unix
+
+Executable test_parser
+  Build$: flag(tests)
+  Path: test
+  MainIs: test_parser.ml
+  Install: false
+  BuildDepends: oUnit, irc-client
+
+Test test_parser
+  Command: $test_parser
+  WorkingDirectory: test

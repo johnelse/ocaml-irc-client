@@ -4,6 +4,6 @@ S lwt
 S test
 S unix
 
-B dist/build/lib-irc_client
-B dist/build/lib-irc_client_lwt
-B dist/build/lib-irc_client_unix
+B _build/lib
+B _build/lwt
+B _build/unix
