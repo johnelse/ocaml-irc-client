@@ -1,5 +1,7 @@
 IRC client library, supporting Lwt and Unix blocking IO.
 
+[![Build status](https://travis-ci.org/johnelse/ocaml-irc-client.png?branch=master)](https://travis-ci.org/johnelse/ocaml-irc-client)
+
 Build dependencies
 ------------------
 
