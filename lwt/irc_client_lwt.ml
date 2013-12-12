@@ -19,4 +19,20 @@ module Io = struct
   let iter = Lwt_list.iter_s
 end
 
-module Client = Irc_client.Make(Io)
+module Client = struct
+  include Irc_client.Make(Io)
+
+  let connect_by_name ~server ~port ?(username="")
+  ?(mode=0) ?(realname="") ~nick ?(password="") () =
+    try
+      lwt addr = Lwt_unix.gethostbyname server in
+      if Array.length addr.Unix.h_addr_list = 0
+        then Lwt.return_none
+        else
+          let ip = addr.Unix.h_addr_list.(0) in
+          let server = Unix.string_of_inet_addr ip in
+          let c = connect ~server ~port ~username ~mode ~realname ~nick ~password in
+          Lwt.return (Some c)
+    with Not_found ->
+      Lwt.return_none
+end

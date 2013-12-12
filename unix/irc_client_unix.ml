@@ -19,4 +19,20 @@ module Io = struct
   let iter = List.iter
 end
 
-module Client = Irc_client.Make(Io)
+module Client = struct
+  include Irc_client.Make(Io)
+
+  let connect_by_name ~server ~port ?(username="")
+  ?(mode=0) ?(realname="") ~nick ?(password="") () =
+    try
+      let addr = Unix.gethostbyname server in
+      if Array.length addr.Unix.h_addr_list = 0
+        then None
+        else
+          let ip = addr.Unix.h_addr_list.(0) in
+          let server = Unix.string_of_inet_addr ip in
+          let c = connect ~server ~port ~username ~mode ~realname ~nick ~password in
+          Some c
+    with Not_found ->
+      None
+end
