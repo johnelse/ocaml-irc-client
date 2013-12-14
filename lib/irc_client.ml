@@ -76,4 +76,13 @@ module Make(Io: Irc_transport.IO) = struct
     in
     let buffer = Buffer.create 0 in
     listen' ~buffer
+
+  let connect_by_name ~server ~port ?(username="")
+  ?(mode=0) ?(realname="") ~nick ?(password="") () =
+    Io.gethostbyname server >>= fun addr_list ->
+    match addr_list with
+    | [] -> Io.return None
+    | server::_ ->
+      connect ~server ~port ~username ~mode ~realname ~nick ~password >>= fun c ->
+      Io.return (Some c)
 end

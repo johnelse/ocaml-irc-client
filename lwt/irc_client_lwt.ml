@@ -16,6 +16,15 @@ module Io = struct
   let read = Lwt_unix.read
   let write = Lwt_unix.write
 
+  let gethostbyname name =
+    try_lwt
+      lwt entry = Lwt_unix.gethostbyname name in
+      let l = Array.to_list entry.Unix.h_addr_list in
+      let l = List.map Unix.string_of_inet_addr l in
+      Lwt.return l
+    with Not_found ->
+      Lwt.return_nil
+
   let iter = Lwt_list.iter_s
 end
 

@@ -16,6 +16,14 @@ module Io = struct
   let read = Unix.read
   let write = Unix.write
 
+  let gethostbyname name =
+    try
+      let entry = Unix.gethostbyname name in
+      let l = Array.to_list entry.Unix.h_addr_list in
+      List.map Unix.string_of_inet_addr l
+    with Not_found ->
+      []
+
   let iter = List.iter
 end
 
