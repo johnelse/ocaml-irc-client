@@ -68,8 +68,8 @@ module Make(Io: Irc_transport.IO) = struct
               | Irc_message.Message {Irc_message.command = "PING"; trail = Some trail} ->
                 (* Handle pings without calling the callback. *)
                 send_pong ~connection ~message:(":"^trail)
-              | m ->
-                callback m)
+              | result ->
+                callback result)
             whole_lines
         end)
       >>= (fun () -> listen' ~buffer)
