@@ -17,6 +17,7 @@ module Make : functor (Io: Irc_transport.IO) ->
 
     val listen : connection:connection_t ->
       callback:(
+        connection:connection_t ->
         result:Irc_message.parse_result ->
         unit Io.t
       ) ->
