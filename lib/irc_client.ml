@@ -48,8 +48,7 @@ module Make(Io: Irc_transport.IO) = struct
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
 
-  let connect_by_name ~server ~port ?(username="")
-  ?(mode=0) ?(realname="") ~nick ?(password="") () =
+  let connect_by_name ~server ~port ~username ~mode ~realname ~nick ~password =
     Io.gethostbyname server >>= fun addr_list ->
     match addr_list with
     | [] -> Io.return None

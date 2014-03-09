@@ -15,8 +15,8 @@ module Make : functor (Io: Irc_transport.IO) ->
     val connect : addr:Io.inet_addr -> port:int -> username:string -> mode:int ->
       realname:string -> nick:string -> password:string -> connection_t Io.t
 
-    val connect_by_name : server:string -> port:int -> ?username:string ->
-      ?mode:int -> ?realname:string -> nick:string -> ?password:string -> unit ->
+    val connect_by_name : server:string -> port:int -> username:string ->
+      mode:int -> realname:string -> nick:string -> password:string ->
       connection_t option Io.t
       (** Try to resolve the [server] name using DNS, otherwise behaves like
           {!connect}. Returns [None] if no IP could be found for the given
