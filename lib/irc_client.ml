@@ -48,6 +48,15 @@ module Make(Io: Irc_transport.IO) = struct
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
 
+  let connect_by_name ~server ~port ?(username="")
+  ?(mode=0) ?(realname="") ~nick ?(password="") () =
+    Io.gethostbyname server >>= fun addr_list ->
+    match addr_list with
+    | [] -> Io.return None
+    | addr ::_ ->
+      connect ~addr ~port ~username ~mode ~realname ~nick ~password >>= fun c ->
+      Io.return (Some c)
+
   let listen ~connection ~callback =
     let read_length = 1024 in
     let read_data = String.create read_length in
@@ -76,13 +85,4 @@ module Make(Io: Irc_transport.IO) = struct
     in
     let buffer = Buffer.create 0 in
     listen' ~buffer
-
-  let connect_by_name ~server ~port ?(username="")
-  ?(mode=0) ?(realname="") ~nick ?(password="") () =
-    Io.gethostbyname server >>= fun addr_list ->
-    match addr_list with
-    | [] -> Io.return None
-    | addr ::_ ->
-      connect ~addr ~port ~username ~mode ~realname ~nick ~password >>= fun c ->
-      Io.return (Some c)
 end

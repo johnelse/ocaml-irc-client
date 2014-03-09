@@ -15,6 +15,13 @@ module Make : functor (Io: Irc_transport.IO) ->
     val connect : addr:Io.inet_addr -> port:int -> username:string -> mode:int ->
       realname:string -> nick:string -> password:string -> connection_t Io.t
 
+    val connect_by_name : server:string -> port:int -> ?username:string ->
+      ?mode:int -> ?realname:string -> nick:string -> ?password:string -> unit ->
+      connection_t option Io.t
+      (** Try to resolve the [server] name using DNS, otherwise behaves like
+          {!connect}. Returns [None] if no IP could be found for the given
+          name. *)
+
     val listen : connection:connection_t ->
       callback:(
         connection:connection_t ->
@@ -22,11 +29,4 @@ module Make : functor (Io: Irc_transport.IO) ->
         unit Io.t
       ) ->
       unit Io.t
-
-    val connect_by_name : server:string -> port:int -> ?username:string ->
-      ?mode:int -> ?realname:string -> nick:string -> ?password:string -> unit ->
-      connection_t option Io.t
-      (** Try to resolve the [server] name using DNS, otherwise behaves like
-          {!connect}. Returns [None] if no IP could be found for the given
-          name. *)
   end
