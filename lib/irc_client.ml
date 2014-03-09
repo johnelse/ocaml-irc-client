@@ -40,21 +40,25 @@ module Make(Io: Irc_transport.IO) = struct
     send_raw ~connection
       ~data:(Printf.sprintf "USER %s %i * :%s" username mode realname)
 
-  let connect ~addr ~port ~username ~mode ~realname ~nick ~password =
+  let connect ~addr ~port ~username ~mode ~realname ~nick ?password () =
     Io.open_socket addr port >>= (fun sock ->
-      let connection = {sock = sock} in
-      send_pass ~connection ~password
+      let connection = {sock = sock} in begin
+        match password with
+        | Some password -> send_pass ~connection ~password
+        | None -> return ()
+      end
       >>= (fun () -> send_nick ~connection ~nick)
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
 
-  let connect_by_name ~server ~port ~username ~mode ~realname ~nick ~password =
+  let connect_by_name ~server ~port ~username ~mode
+      ~realname ~nick ?password () =
     Io.gethostbyname server >>= fun addr_list ->
     match addr_list with
     | [] -> Io.return None
     | addr ::_ ->
-      connect ~addr ~port ~username ~mode ~realname ~nick ~password >>= fun c ->
-      Io.return (Some c)
+      connect ~addr ~port ~username ~mode ~realname ~nick ?password ()
+      >>= fun c -> Io.return (Some c)
 
   let listen ~connection ~callback =
     let read_length = 1024 in
