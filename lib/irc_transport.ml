@@ -5,13 +5,15 @@ module type IO = sig
 
   type file_descr
 
-  val open_socket : string -> int -> file_descr t
+  type inet_addr
+
+  val open_socket : inet_addr -> int -> file_descr t
   val close_socket : file_descr -> unit t
 
   val read : file_descr -> string -> int -> int -> int t
   val write : file_descr -> string -> int -> int -> int t
 
-  val gethostbyname : string -> string list t
+  val gethostbyname : string -> inet_addr list t
     (** List of IPs that correspond to the given hostname (or an empty
         list if none is found) *)
 

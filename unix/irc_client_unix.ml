@@ -5,10 +5,12 @@ module Io = struct
 
   type file_descr = Unix.file_descr
 
-  let open_socket server port =
+  type inet_addr = Unix.inet_addr
+
+  let open_socket addr port =
     let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
-    let addr = Unix.ADDR_INET (Unix.inet_addr_of_string server, port) in
-    Unix.connect sock addr;
+    let sockaddr = Unix.ADDR_INET (addr, port) in
+    Unix.connect sock sockaddr;
     sock
 
   let close_socket = Unix.close
@@ -19,8 +21,7 @@ module Io = struct
   let gethostbyname name =
     try
       let entry = Unix.gethostbyname name in
-      let l = Array.to_list entry.Unix.h_addr_list in
-      List.map Unix.string_of_inet_addr l
+      Array.to_list entry.Unix.h_addr_list
     with Not_found ->
       []
 

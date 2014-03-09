@@ -12,7 +12,7 @@ module Make : functor (Io: Irc_transport.IO) ->
     val send_user : connection:connection_t ->
       username:string -> mode:int -> realname:string -> unit Io.t
 
-    val connect : server:string -> port:int -> username:string -> mode:int ->
+    val connect : addr:Io.inet_addr -> port:int -> username:string -> mode:int ->
       realname:string -> nick:string -> password:string -> connection_t Io.t
 
     val listen : connection:connection_t ->
