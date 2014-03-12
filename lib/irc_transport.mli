@@ -14,6 +14,8 @@ module type IO = sig
   val write : file_descr -> string -> int -> int -> int t
 
   val gethostbyname : string -> inet_addr list t
+  (** List of IPs that correspond to the given hostname (or an empty
+      list if none is found) *)
 
   val iter : ('a -> unit t) -> 'a list -> unit t
 end
