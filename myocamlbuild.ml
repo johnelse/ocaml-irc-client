@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: a6aabe6bbb95d393be600a7555dce6ed) *)
+(* DO NOT EDIT (digest: 10c6e705428ed417ee23076695e9c827) *)
 module OASISGettext = struct
 (* # 21 "src/oasis/OASISGettext.ml" *)
 
@@ -545,8 +545,8 @@ let package_default =
            ],
             [(OASISExpr.EBool true, S [A "-bin-annot"])])
        ];
-     includes = [("unix", ["lib"]); ("test", ["lib"]); ("lwt", ["lib"])];
-     }
+     includes = [("unix", ["lib"]); ("test", ["lib"]); ("lwt", ["lib"])]
+  }
   ;;
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;

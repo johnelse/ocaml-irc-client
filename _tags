@@ -43,3 +43,4 @@
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
+<lib>: include

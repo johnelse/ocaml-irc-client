@@ -23,6 +23,9 @@ setup.data: setup.ml
 build: setup.data setup.ml
 	ocaml setup.ml -build -j $(J)
 
+doc: setup.data setup.ml
+	ocaml setup.ml -doc -j $(J)
+
 install: setup.data setup.ml
 	ocaml setup.ml -install
 

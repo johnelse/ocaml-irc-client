@@ -53,3 +53,11 @@ Executable test_parser
 Test test_parser
   Command: $test_parser
   WorkingDirectory: test
+
+Document api
+  Title: IRC client library
+  Type: ocamlbuild (0.3)
+  BuildTools+: ocamldoc
+  XOcamlbuildModules: Irc_client, Irc_helpers, Irc_message, Irc_transport
+  XOcamlBuildPath: doc
+  Install: false

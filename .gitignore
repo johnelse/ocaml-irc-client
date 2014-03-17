@@ -5,4 +5,5 @@ oUnit-anon.cache
 setup.data
 setup.log
 
+api.docdir
 test_parser.byte
