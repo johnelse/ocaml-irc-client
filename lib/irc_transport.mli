@@ -1,3 +1,6 @@
+(** Type of IO modules which can be used to create an IRC client library, via
+    the {{:Irc_client.Make.html}Irc_client.Make} functor. *)
+
 module type IO = sig
   type 'a t
   val (>>=) : 'a t -> ('a -> 'b t) -> 'b t

@@ -1,3 +1,5 @@
+(** IRC message parsing. *)
+
 type t = {
   prefix: string option;
   command: string;

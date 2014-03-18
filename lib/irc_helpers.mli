@@ -1,3 +1,5 @@
+(** Helper functions for buffering data as it is read from a socket. *)
+
 val split : str:string -> c:char -> string list
 (** Split a string [str] at each occurence of the character [c]. *)
 

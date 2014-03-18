@@ -1,3 +1,6 @@
+(** Generic IRC client library, functorised over the
+    {{:Irc_transport.IO.html}Irc_transport.IO} module. *)
+
 module Make : functor (Io: Irc_transport.IO) ->
   sig
     type connection_t
