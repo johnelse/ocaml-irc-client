@@ -65,7 +65,7 @@ let test_full_parser =
       "test_parse_ping" >::
         test ~msg:"Parsing a PING message"
           ~input:"PING :abc.def"
-          ~expected_output:(Irc_message.Message {
+          ~expected_output:(`Ok {
             Irc_message.prefix = None;
             command = "PING";
             params = [];
@@ -74,7 +74,7 @@ let test_full_parser =
       "test_parse_privmsg" >::
         test ~msg:"Parsing a PRIVMSG"
           ~input:":nick!user@host.com PRIVMSG #channel :Hello all"
-          ~expected_output:(Irc_message.Message {
+          ~expected_output:(`Ok {
             Irc_message.prefix = Some "nick!user@host.com";
             command = "PRIVMSG";
             params = ["#channel"];

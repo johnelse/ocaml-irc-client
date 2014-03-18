@@ -5,9 +5,11 @@ type t = {
   trail: string option;
 }
 
-type parse_result =
-  | Message of t
-  | Parse_error of (string * string)
+type parse_error =
+  | ZeroLengthMessage
+
+let string_of_error = function
+  | ZeroLengthMessage -> "ZeroLengthMessage"
 
 let extract_prefix str =
   if str.[0] = ':'
@@ -34,13 +36,13 @@ let extract_command_and_params str =
   (List.hd words), (List.tl words)
 
 let parse message =
-  if String.length message = 0 then
-    Parse_error (message, "Zero-length message")
+  if String.length message = 0
+  then `Error (message, ZeroLengthMessage)
   else begin
     let prefix, rest = extract_prefix message in
     let rest, trail = extract_trail rest in
     let command, params = extract_command_and_params rest in
-    Message {
+    `Ok {
       prefix;
       command;
       params;

@@ -28,7 +28,7 @@ module Client : sig
   val listen : connection:connection_t ->
     callback:(
       connection:connection_t ->
-      result:Irc_message.parse_result ->
+      result:(Irc_message.t, (string * Irc_message.parse_error)) Irc_result.t ->
       unit Lwt.t
     ) ->
     unit Lwt.t

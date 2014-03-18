@@ -78,7 +78,7 @@ module Make(Io: Irc_transport.IO) = struct
           Io.iter
             (fun line ->
               match Irc_message.parse line with
-              | Irc_message.Message {Irc_message.command = "PING"; trail = Some trail} ->
+              | `Ok {Irc_message.command = "PING"; trail = Some trail} ->
                 (* Handle pings without calling the callback. *)
                 send_pong ~connection ~message:(":"^trail)
               | result ->

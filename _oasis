@@ -25,7 +25,7 @@ Library irc_client
   Findlibname: irc-client
   ByteOpt: -bin-annot
   NativeOpt: -bin-annot
-  Modules: Irc_client, Irc_helpers, Irc_message, Irc_transport
+  Modules: Irc_result, Irc_client, Irc_helpers, Irc_message, Irc_transport
 
 Library irc_client_lwt
   Build$: flag(lwt)
