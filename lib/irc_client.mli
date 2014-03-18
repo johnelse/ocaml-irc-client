@@ -33,7 +33,7 @@ module Make : functor (Io: Irc_transport.IO) ->
       realname:string -> nick:string -> ?password:string -> unit ->
       connection_t Io.t
     (** Connect to an IRC server at address [addr]. The PASS command will be
-     *  sent if [password] is not None. *)
+        sent if [password] is not None. *)
 
     val connect_by_name : server:string -> port:int -> username:string ->
       mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
@@ -50,6 +50,6 @@ module Make : functor (Io: Irc_transport.IO) ->
       ) ->
       unit Io.t
     (** [listen connection callback] listens for incoming messages on
-     *  [connection]. All server pings are handled internally; all other
-     *  messages are passed, along with [connection], to [callback]. *)
+        [connection]. All server pings are handled internally; all other
+        messages are passed, along with [connection], to [callback]. *)
   end
