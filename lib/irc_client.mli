@@ -1,6 +1,9 @@
 (** Generic IRC client library, functorised over the
     {{:Irc_transport.IO.html}Irc_transport.IO} module. *)
 
+type connect_error =
+  | UnknownHost
+
 module Make : functor (Io: Irc_transport.IO) ->
   sig
     type connection_t
@@ -37,7 +40,7 @@ module Make : functor (Io: Irc_transport.IO) ->
 
     val connect_by_name : server:string -> port:int -> username:string ->
       mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
-      connection_t option Io.t
+      (connection_t, connect_error) Irc_result.t Io.t
     (** Try to resolve the [server] name using DNS, otherwise behaves like
         {!connect}. Returns [None] if no IP could be found for the given
         name. *)

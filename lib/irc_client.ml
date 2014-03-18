@@ -1,3 +1,6 @@
+type connect_error =
+  | UnknownHost
+
 module Make(Io: Irc_transport.IO) = struct
   type connection_t = {
     sock: Io.file_descr;
@@ -56,10 +59,10 @@ module Make(Io: Irc_transport.IO) = struct
     Io.gethostbyname server
     >>= (fun addr_list ->
       match addr_list with
-      | [] -> Io.return None
+      | [] -> Io.return (`Error UnknownHost)
       | addr :: _ ->
         connect ~addr ~port ~username ~mode ~realname ~nick ?password ()
-        >>= (fun connection -> Io.return (Some connection)))
+        >>= (fun connection -> Io.return (`Ok connection)))
 
   let listen ~connection ~callback =
     let read_length = 1024 in

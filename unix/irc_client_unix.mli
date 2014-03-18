@@ -23,7 +23,7 @@ module Client : sig
 
   val connect_by_name : server:string -> port:int -> username:string ->
     mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
-    connection_t option
+    (connection_t, Irc_client.connect_error) Irc_result.t
 
   val listen : connection:connection_t ->
     callback:(
