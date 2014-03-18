@@ -10,7 +10,9 @@ type t = {
 
 type parse_result =
   | Message of t
+  (** A successfully-parsed message. *)
   | Parse_error of (string * string)
+  (** A parse failure, containing the original data and an error message .*)
 (** A type representing an attempt to parse a string into an IRC message. *)
 
 val extract_prefix : string -> string option * string
