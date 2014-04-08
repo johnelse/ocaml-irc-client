@@ -52,3 +52,9 @@ let lwt_main =
 
 let _ = Lwt_main.run lwt_main
 ```
+
+Compile the above with:
+
+```
+ocamlfind ocamlopt -package irc-client.lwt -linkpkg code.ml
+```
