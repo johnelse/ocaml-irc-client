@@ -16,6 +16,10 @@ Flag unix
   Description: build the Unix library
   Default: false
 
+Flag examples
+  Description: build examples
+  Default: false
+
 Library irc_client
   Path: lib
   Findlibname: irc-client
@@ -42,6 +46,13 @@ Library irc_client_unix
   ByteOpt: -bin-annot
   NativeOpt: -bin-annot
   Modules: Irc_client_unix
+  
+Executable example1
+  Build$: flag(examples)
+  Path: examples
+  MainIs: example1.ml
+  Install: false
+  BuildDepends: irc-client.lwt
 
 Executable test_parser
   Build$: flag(tests)
