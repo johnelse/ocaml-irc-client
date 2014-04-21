@@ -1,4 +1,4 @@
-open Irc_client_lwt.Io
+open Lwt
 module C = Irc_client_lwt.Client
 
 let host = "totoritoto.gogol.zoooooopt.blah"

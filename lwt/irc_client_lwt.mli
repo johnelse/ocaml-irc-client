@@ -1,5 +1,3 @@
-module Io : Irc_transport.IO with type 'a t = 'a Lwt.t
-
 module Client : sig
   type connection_t
 
