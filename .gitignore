@@ -6,4 +6,4 @@ setup.data
 setup.log
 
 api.docdir
-test_parser.byte
+*.byte
