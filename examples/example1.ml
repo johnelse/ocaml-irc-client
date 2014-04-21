@@ -1,28 +1,8 @@
-IRC client library, supporting Lwt and Unix blocking IO.
-
-[![Build status](https://travis-ci.org/johnelse/ocaml-irc-client.png?branch=master)](https://travis-ci.org/johnelse/ocaml-irc-client)
-
-Build dependencies
-------------------
-
-* [lwt](http://ocsigen.org/lwt/) (optional)
-* [oasis](https://github.com/ocaml/oasis)
-* [oUnit](http://ounit.forge.ocamlcore.org/)
-
-The latest tagged version is available via [opam](http://opam.ocamlpro.com): `opam install irc-client`
-
-Usage
------
-
-Simple bot which connects to a channel, sends a message, and then logs all
-messages in that channel to stdout:
-
-```ocaml
 open Irc_client_lwt.Io
 module C = Irc_client_lwt.Client
 
-let host = "localhost"
-let port = 6667
+let host = "totoritoto.gogol.zoooooopt.blah"
+let port = 16667
 let realname = "Demo IRC bot"
 let nick = "demoirc"
 let username = nick
@@ -59,13 +39,5 @@ let lwt_main =
   >>= fun () -> C.send_quit ~connection
 
 let _ = Lwt_main.run lwt_main
-```
 
-Compile the above with:
-
-```
-ocamlfind ocamlopt -package irc-client.lwt -linkpkg code.ml
-```
-
-Alternatively, you can find it under the examples/ directory as exampel1.ml;
-enable its compilation during config time with --enable-examples.
+(* ocamlfind ocamlopt -package irc-client.lwt -linkpkg code.ml *)
