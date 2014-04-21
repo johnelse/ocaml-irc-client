@@ -46,7 +46,7 @@ Library irc_client_unix
   ByteOpt: -bin-annot
   NativeOpt: -bin-annot
   Modules: Irc_client_unix
-  
+
 Executable example1
   Build$: flag(examples)
   Path: examples

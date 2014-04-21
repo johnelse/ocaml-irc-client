@@ -9,6 +9,8 @@ endif
 
 UNIX_FLAG=--enable-unix
 
+EXAMPLES_FLAG=--enable-examples
+
 TESTS_FLAG=--enable-tests
 
 NAME=irc-client
@@ -18,7 +20,11 @@ setup.ml: _oasis
 	oasis setup
 
 setup.data: setup.ml
-	ocaml setup.ml -configure $(LWT_FLAG) $(UNIX_FLAG) $(TESTS_FLAG)
+	ocaml setup.ml -configure \
+		$(LWT_FLAG) \
+		$(UNIX_FLAG) \
+		$(EXAMPLES_FLAG) \
+		$(TESTS_FLAG) \
 
 build: setup.data setup.ml
 	ocaml setup.ml -build -j $(J)
