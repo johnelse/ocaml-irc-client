@@ -22,6 +22,10 @@ module Make : functor (Io: Irc_transport.IO) ->
       target:string -> message:string -> unit Io.t
     (** Send the PRIVMSG command. *)
 
+    val send_notice : connection:connection_t ->
+      target:string -> message:string -> unit Io.t
+    (** Send the NOTICE command. *)
+
     val send_quit : connection:connection_t -> unit Io.t
     (** Send the QUIT command. *)
 
