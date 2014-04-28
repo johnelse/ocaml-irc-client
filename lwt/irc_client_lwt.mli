@@ -12,6 +12,9 @@ module Client : sig
   val send_privmsg : connection:connection_t ->
     target:string -> message:string -> unit Lwt.t
 
+  val send_notice : connection:connection_t ->
+    target:string -> message:string -> unit Lwt.t
+
   val send_quit : connection:connection_t -> unit Lwt.t
 
   val send_user : connection:connection_t ->
