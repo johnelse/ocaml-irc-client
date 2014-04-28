@@ -48,7 +48,7 @@ Library irc_client_unix
   Modules: Irc_client_unix
 
 Executable example1
-  Build$: flag(examples)
+  Build$: flag(lwt) && flag(examples)
   Path: examples
   MainIs: example1.ml
   Install: false
