@@ -18,7 +18,7 @@ Simple bot which connects to a channel, sends a message, and then logs all
 messages in that channel to stdout:
 
 ```ocaml
-open Irc_client_lwt.Io
+open Lwt
 module C = Irc_client_lwt.Client
 
 let host = "localhost"
