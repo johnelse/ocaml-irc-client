@@ -14,8 +14,8 @@ module Make(Io: Irc_transport.IO) = struct
           ~length:(length - chars_written))
 
   let send_raw ~connection ~data =
-    let formatted_data = Printf.sprintf "%s\r\n" data in
-    let length = String.length formatted_data in
+    let formatted_data = Bytes.unsafe_of_string (Printf.sprintf "%s\r\n" data) in
+    let length = Bytes.length formatted_data in
     really_write ~connection ~data:formatted_data ~offset:0 ~length
 
   let send_join ~connection ~channel =
@@ -65,7 +65,7 @@ module Make(Io: Irc_transport.IO) = struct
 
   let listen ~connection ~callback =
     let read_length = 1024 in
-    let read_data = String.create read_length in
+    let read_data = Bytes.make read_length ' ' in
     let rec listen' ~buffer =
       (* Read some data into our string. *)
       Io.read connection.sock read_data 0 read_length
@@ -73,7 +73,7 @@ module Make(Io: Irc_transport.IO) = struct
         if chars_read = 0 (* EOF from server - we have quit or been kicked. *)
         then return ()
         else begin
-          let input = String.sub read_data 0 chars_read in
+          let input = Bytes.sub_string read_data 0 chars_read in
           (* Update the buffer and extract the whole lines. *)
           let whole_lines = Irc_helpers.handle_input ~buffer ~input in
           (* Handle the whole lines which were read. *)
