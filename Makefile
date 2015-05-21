@@ -16,9 +16,6 @@ TESTS_FLAG=--enable-tests
 NAME=irc-client
 J=4
 
-setup.ml: _oasis
-	oasis setup
-
 setup.data: setup.ml
 	ocaml setup.ml -configure \
 		$(LWT_FLAG) \
