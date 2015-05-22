@@ -15,6 +15,7 @@ remove: [
 ]
 depends: [
   "ounit"
+  "ocamlfind"
 ]
 depopts: ["lwt"]
 ocaml-version: [>= "4.00.1"]

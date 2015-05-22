@@ -26,6 +26,7 @@ Library irc_client
   ByteOpt: -bin-annot
   NativeOpt: -bin-annot
   Modules: Irc_client, Irc_helpers, Irc_message, Irc_transport
+  BuildDepends: bytes
 
 Library irc_client_lwt
   Build$: flag(lwt)

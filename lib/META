@@ -1,7 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5733ae64ceba94a923ca8720a9b518da)
+# DO NOT EDIT (digest: 0990743d67c3b74e1f035261c4879259)
 version = "0.1.2"
 description = "IRC client library"
+requires = "bytes"
 archive(byte) = "irc_client.cma"
 archive(byte, plugin) = "irc_client.cma"
 archive(native) = "irc_client.cmxa"

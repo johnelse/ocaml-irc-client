@@ -1,8 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: e86b94cc4f3be6f5a1cf8a7084d76daa)
+# DO NOT EDIT (digest: b0d86de6ad1c87dc95ca5dbc4cd96d0c)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
+true: annot, bin_annot
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
 ".bzr": -traverse
@@ -16,42 +17,49 @@
 # Library irc_client
 "lib/irc_client.cmxs": use_irc_client
 <lib/irc_client.{cma,cmxa}>: oasis_library_irc_client_byte
-<lib/*.ml{,i}>: oasis_library_irc_client_byte
+<lib/*.ml{,i,y}>: oasis_library_irc_client_byte
 <lib/irc_client.{cma,cmxa}>: oasis_library_irc_client_native
-<lib/*.ml{,i}>: oasis_library_irc_client_native
+<lib/*.ml{,i,y}>: oasis_library_irc_client_native
+<lib/*.ml{,i,y}>: pkg_bytes
 # Library irc_client_lwt
 "lwt/irc_client_lwt.cmxs": use_irc_client_lwt
 <lwt/irc_client_lwt.{cma,cmxa}>: oasis_library_irc_client_lwt_byte
-<lwt/*.ml{,i}>: oasis_library_irc_client_lwt_byte
+<lwt/*.ml{,i,y}>: oasis_library_irc_client_lwt_byte
 <lwt/irc_client_lwt.{cma,cmxa}>: oasis_library_irc_client_lwt_native
-<lwt/*.ml{,i}>: oasis_library_irc_client_lwt_native
-<lwt/*.ml{,i}>: pkg_lwt
-<lwt/*.ml{,i}>: pkg_lwt.syntax
-<lwt/*.ml{,i}>: pkg_lwt.unix
-<lwt/*.ml{,i}>: use_irc_client
+<lwt/*.ml{,i,y}>: oasis_library_irc_client_lwt_native
+<lwt/*.ml{,i,y}>: pkg_bytes
+<lwt/*.ml{,i,y}>: pkg_lwt
+<lwt/*.ml{,i,y}>: pkg_lwt.syntax
+<lwt/*.ml{,i,y}>: pkg_lwt.unix
+<lwt/*.ml{,i,y}>: use_irc_client
 # Library irc_client_unix
 "unix/irc_client_unix.cmxs": use_irc_client_unix
 <unix/irc_client_unix.{cma,cmxa}>: oasis_library_irc_client_unix_byte
-<unix/*.ml{,i}>: oasis_library_irc_client_unix_byte
+<unix/*.ml{,i,y}>: oasis_library_irc_client_unix_byte
 <unix/irc_client_unix.{cma,cmxa}>: oasis_library_irc_client_unix_native
-<unix/*.ml{,i}>: oasis_library_irc_client_unix_native
-<unix/*.ml{,i}>: use_irc_client
+<unix/*.ml{,i,y}>: oasis_library_irc_client_unix_native
+<unix/*.ml{,i,y}>: pkg_bytes
+<unix/*.ml{,i,y}>: use_irc_client
 # Executable example1
+"examples/example1.byte": pkg_bytes
 "examples/example1.byte": pkg_lwt
 "examples/example1.byte": pkg_lwt.syntax
 "examples/example1.byte": pkg_lwt.unix
 "examples/example1.byte": use_irc_client
 "examples/example1.byte": use_irc_client_lwt
-<examples/*.ml{,i}>: pkg_lwt
-<examples/*.ml{,i}>: pkg_lwt.syntax
-<examples/*.ml{,i}>: pkg_lwt.unix
-<examples/*.ml{,i}>: use_irc_client
-<examples/*.ml{,i}>: use_irc_client_lwt
+<examples/*.ml{,i,y}>: pkg_bytes
+<examples/*.ml{,i,y}>: pkg_lwt
+<examples/*.ml{,i,y}>: pkg_lwt.syntax
+<examples/*.ml{,i,y}>: pkg_lwt.unix
+<examples/*.ml{,i,y}>: use_irc_client
+<examples/*.ml{,i,y}>: use_irc_client_lwt
 # Executable test_parser
+"test/test_parser.byte": pkg_bytes
 "test/test_parser.byte": pkg_oUnit
 "test/test_parser.byte": use_irc_client
-<test/*.ml{,i}>: pkg_oUnit
-<test/*.ml{,i}>: use_irc_client
+<test/*.ml{,i,y}>: pkg_bytes
+<test/*.ml{,i,y}>: pkg_oUnit
+<test/*.ml{,i,y}>: use_irc_client
 # OASIS_STOP
 <lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
 <lib>: include
