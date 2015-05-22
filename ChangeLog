@@ -1,3 +1,6 @@
+0.2.1 (23-May-2015):
+ * Use Bytes for compatibility with -safe-string
+
 0.2.0 (28-Apr-2014):
  * Interface tidyup
  * Add connect_by_name which performs a DNS lookup on a supplied hostname

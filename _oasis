@@ -1,6 +1,6 @@
 OASISFormat:  0.3
 Name:         irc-client
-Version:      0.1.2
+Version:      0.2.1
 Synopsis:     IRC client library
 License:      MIT
 Authors:      various
