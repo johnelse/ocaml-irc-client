@@ -6,6 +6,9 @@ module Make : functor (Io: Irc_transport.IO) ->
     type connection_t
     (** A connection to an IRC server. *)
 
+    val send : connection:connection_t -> Irc_message.t -> unit Io.t
+    (** Send the given message *)
+
     val send_join : connection:connection_t -> channel:string -> unit Io.t
     (** Send the JOIN command. *)
 

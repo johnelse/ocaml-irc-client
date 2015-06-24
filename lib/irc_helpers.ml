@@ -1,16 +1,29 @@
-external (|>) : 'a -> ('a -> 'b) -> 'b = "%revapply"
+let (|>) x f = f x
 
 let split ~str ~c =
-  let rec rev_split' ~str ~c ~acc =
+  let rec rev_split' ~str ~i ~c ~acc =
     try
-      let index = String.index str c in
-      let before = String.sub str 0 index in
-      let after = String.sub str (index + 1) (String.length str - index - 1) in
-      rev_split' ~str:after ~c ~acc:(before :: acc)
+      let index = String.index_from str i c in
+      if i=index then rev_split' ~str ~c ~i:(i+1) ~acc
+      else
+        let before = String.sub str i (index-i-1) in
+        rev_split' ~str ~c ~i:(index+1) ~acc:(before :: acc)
     with Not_found ->
-      str :: acc
+      if i < String.length str
+      then String.sub str i (String.length str - i) :: acc
+      else acc
   in
-  List.rev (rev_split' ~str ~c ~acc:[])
+  List.rev (rev_split' ~str ~i:0 ~c ~acc:[])
+
+let split1_exn ~str ~c =
+  let index = String.index str c in
+  let before = String.sub str 0 index in
+  let after = String.sub str (index + 1) (String.length str - index - 1) in
+  before, after
+
+let split1 ~str ~c =
+  try Some (split1_exn ~str ~c)
+  with Not_found -> None
 
 let get_whole_lines ~str =
   let lines =
@@ -27,9 +40,10 @@ let get_whole_lines ~str =
 let handle_input ~buffer ~input =
   (* Append the new input to the buffer. *)
   Buffer.add_substring buffer input 0 (String.length input);
-  let whole_lines, rest = get_whole_lines (Buffer.contents buffer) in
+  let whole_lines, rest = get_whole_lines ~str:(Buffer.contents buffer) in
   (* Replace the buffer contents with the last, partial, line. *)
   Buffer.reset buffer;
   Buffer.add_string buffer rest;
   (* Return the whole lines extracted from the buffer. *)
   whole_lines
+

@@ -19,14 +19,10 @@ let string_list_to_string string_list =
 let callback ~connection ~result =
   let open Irc_message in
   match result with
-  | Message {prefix=prefix; command=command; params=params; trail=trail} ->
-    Lwt_io.printf "Got message: prefix=%s; command=%s; params=%s; trail=%s\n"
-      (string_opt_to_string prefix)
-      command
-      (string_list_to_string params)
-      (string_opt_to_string trail)
-  | Parse_error (raw, error) ->
-    Lwt_io.printf "Failed to parse \"%s\" because: %s" raw error
+  | `Ok msg ->
+    Lwt_io.printf "Got message: %s\n" (to_string msg)
+  | `Error e ->
+    Lwt_io.printl e
 
 let lwt_main =
   Lwt_unix.gethostbyname host
