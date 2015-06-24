@@ -61,5 +61,4 @@ true: annot, bin_annot
 <test/*.ml{,i,y}>: pkg_oUnit
 <test/*.ml{,i,y}>: use_irc_client
 # OASIS_STOP
-<lwt/*.ml{,i}>: syntax_camlp4o, pkg_lwt.syntax
 <lib>: include

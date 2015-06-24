@@ -31,7 +31,7 @@ Library irc_client
 Library irc_client_lwt
   Build$: flag(lwt)
   Path: lwt
-  BuildDepends: irc-client, lwt, lwt.syntax, lwt.unix
+  BuildDepends: irc-client, lwt, lwt.unix
   Findlibname: lwt
   Findlibparent: irc_client
   ByteOpt: -bin-annot
