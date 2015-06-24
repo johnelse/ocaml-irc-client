@@ -36,14 +36,16 @@ module Make : functor (Io: Irc_transport.IO) ->
       username:string -> mode:int -> realname:string -> unit Io.t
     (** Send the USER command. *)
 
-    val connect : addr:Io.inet_addr -> port:int -> username:string -> mode:int ->
-      realname:string -> nick:string -> ?password:string -> unit ->
+    val connect :
+      ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
+      addr:Io.inet_addr -> port:int -> nick:string -> unit ->
       connection_t Io.t
     (** Connect to an IRC server at address [addr]. The PASS command will be
         sent if [password] is not None. *)
 
-    val connect_by_name : server:string -> port:int -> username:string ->
-      mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
+    val connect_by_name :
+      ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
+      server:string -> port:int -> nick:string -> unit ->
       connection_t option Io.t
     (** Try to resolve the [server] name using DNS, otherwise behaves like
         {!connect}. Returns [None] if no IP could be found for the given
@@ -51,8 +53,8 @@ module Make : functor (Io: Irc_transport.IO) ->
 
     val listen : connection:connection_t ->
       callback:(
-        connection:connection_t ->
-        result:Irc_message.parse_result ->
+        connection_t ->
+        Irc_message.parse_result ->
         unit Io.t
       ) ->
       unit Io.t

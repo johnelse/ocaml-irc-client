@@ -48,7 +48,9 @@ module Make(Io: Irc_transport.IO) = struct
     let msg = M.user ~username ~mode ~realname in
     send ~connection msg
 
-  let connect ~addr ~port ~username ~mode ~realname ~nick ?password () =
+  let connect
+      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
+      ?password ~addr ~port ~nick () =
     Io.open_socket addr port >>= (fun sock ->
       let connection = {sock = sock} in begin
         match password with
@@ -59,8 +61,9 @@ module Make(Io: Irc_transport.IO) = struct
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
 
-  let connect_by_name ~server ~port ~username ~mode
-      ~realname ~nick ?password () =
+  let connect_by_name
+      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
+      ?password ~server ~port ~nick () =
     Io.gethostbyname server
     >>= (function
       | [] -> Io.return None
@@ -89,7 +92,7 @@ module Make(Io: Irc_transport.IO) = struct
                 (* Handle pings without calling the callback. *)
                 send_pong ~connection ~message
               | result ->
-                callback ~connection ~result)
+                callback connection result)
             whole_lines
         end)
       >>= (fun () -> listen' ~buffer)

@@ -19,12 +19,14 @@ val send_quit : connection:connection_t -> unit Lwt.t
 val send_user : connection:connection_t ->
   username:string -> mode:int -> realname:string -> unit Lwt.t
 
-val connect : addr:Lwt_unix.inet_addr -> port:int -> username:string ->
-  mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
+val connect :
+  ?username:string -> ?mode:int -> ?realname:string -> ?password:string -> 
+  addr:Lwt_unix.inet_addr -> port:int -> nick:string -> unit ->
   connection_t Lwt.t
 
-val connect_by_name : server:string -> port:int -> username:string ->
-  mode:int -> realname:string -> nick:string -> ?password:string -> unit ->
+val connect_by_name :
+  ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
+  server:string -> port:int -> nick:string -> unit ->
   connection_t option Lwt.t
 
 val listen : connection:connection_t ->
