@@ -28,4 +28,4 @@ module Io = struct
   let iter = List.iter
 end
 
-module Client = Irc_client.Make(Io)
+include Irc_client.Make(Io)

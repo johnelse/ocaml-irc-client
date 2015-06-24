@@ -32,4 +32,4 @@ module Io = struct
   let iter = Lwt_list.iter_s
 end
 
-module Client = Irc_client.Make(Io)
+include Irc_client.Make(Io)
