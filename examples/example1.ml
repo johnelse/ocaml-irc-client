@@ -1,5 +1,5 @@
 open Lwt
-module C = Irc_client_lwt.Client
+module C = Irc_client_lwt
 
 let host = "totoritoto.gogol.zoooooopt.blah"
 let port = 16667
@@ -16,7 +16,7 @@ let string_opt_to_string = function
 let string_list_to_string string_list =
   Printf.sprintf "[%s]" (String.concat "; " string_list)
 
-let callback ~connection ~result =
+let callback _connection result =
   let open Irc_message in
   match result with
   | `Ok msg ->

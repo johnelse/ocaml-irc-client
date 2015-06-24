@@ -55,6 +55,13 @@ Executable example1
   Install: false
   BuildDepends: irc-client.lwt
 
+Executable example2
+  Build$: flag(lwt) && flag(examples)
+  Path: examples
+  MainIs: example2.ml
+  Install: false
+  BuildDepends: irc-client.lwt
+
 Executable test_parser
   Build$: flag(tests)
   Path: test
