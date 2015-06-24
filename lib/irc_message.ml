@@ -86,11 +86,17 @@ let split_spaces str = Irc_helpers.split ~str ~c:' '
 let split_comma str = Irc_helpers.split ~str ~c:','
 let split_space1 str = Irc_helpers.split1_exn ~str ~c:' '
 
+let (|>) x f = f x
+
 (* split parameters into tokens separated by spaces. If a trail, prefixed
    by ':', exists, it is the last token *)
 let split_params params =
   let s, trail = extract_trail params in
-  let tokens = split_spaces s  in
+  let tokens =
+    split_spaces s
+    |> List.map String.trim
+    |> List.filter (fun s -> s <> "")
+  in
   match trail with
     | None -> tokens
     | Some trail -> tokens @ [trail]
@@ -166,8 +172,12 @@ let parse_exn msg =
 
 let parse s =
   try `Ok (parse_exn s)
-  with ParseError (m, e) ->
+  with
+  | ParseError (m, e) ->
     `Error (Printf.sprintf "failed to parse \"%s\" because: %s" m e)
+  | e ->
+    `Error (Printf.sprintf "unexpected error trying to parse \"%s\": %s"
+              s (Printexc.to_string e))
 
 (* write [s] into [buf], possibly as a ':'-prefixed trail *)
 let write_trail buf s =

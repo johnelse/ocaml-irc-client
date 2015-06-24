@@ -77,26 +77,24 @@ module Make(Io: Irc_transport.IO) = struct
     let rec listen' ~buffer =
       (* Read some data into our string. *)
       Io.read connection.sock read_data 0 read_length
-      >>= (fun chars_read ->
-        if chars_read = 0 (* EOF from server - we have quit or been kicked. *)
-        then return ()
-        else begin
-          let input = Bytes.sub_string read_data 0 chars_read in
-          (* Update the buffer and extract the whole lines. *)
-          let whole_lines = Irc_helpers.handle_input ~buffer ~input in
-          (* Handle the whole lines which were read. *)
-          Io.iter
-            (fun line ->
-              match M.parse line with
-              | `Ok {M.command = M.PING message; _} ->
-                (* Handle pings without calling the callback. *)
-                send_pong ~connection ~message
-              | result ->
-                callback connection result)
-            whole_lines
-        end)
-      >>= (fun () -> listen' ~buffer)
+      >>= function
+      | 0 -> return () (* EOF from server - we have quit or been kicked. *)
+      | len ->
+        let input = Bytes.sub_string read_data 0 len in
+        let lines = Irc_helpers.pop_lines ~buffer ~input in
+        let _ = Io.iter
+          (fun line ->
+             match M.parse line with
+             | `Ok {M.command = M.PING message; _} ->
+               (* Handle pings without calling the callback. *)
+               send_pong ~connection ~message
+             | result ->
+               callback connection result
+
+          ) lines
+        in
+        listen' ~buffer
     in
-    let buffer = Buffer.create 0 in
+    let buffer = Buffer.create 256 in
     listen' ~buffer
 end
