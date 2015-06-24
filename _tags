@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b0d86de6ad1c87dc95ca5dbc4cd96d0c)
+# DO NOT EDIT (digest: b3893d9647a4c3cf20fb5f9110f00db4)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -29,7 +29,6 @@ true: annot, bin_annot
 <lwt/*.ml{,i,y}>: oasis_library_irc_client_lwt_native
 <lwt/*.ml{,i,y}>: pkg_bytes
 <lwt/*.ml{,i,y}>: pkg_lwt
-<lwt/*.ml{,i,y}>: pkg_lwt.syntax
 <lwt/*.ml{,i,y}>: pkg_lwt.unix
 <lwt/*.ml{,i,y}>: use_irc_client
 # Library irc_client_unix
@@ -43,13 +42,17 @@ true: annot, bin_annot
 # Executable example1
 "examples/example1.byte": pkg_bytes
 "examples/example1.byte": pkg_lwt
-"examples/example1.byte": pkg_lwt.syntax
 "examples/example1.byte": pkg_lwt.unix
 "examples/example1.byte": use_irc_client
 "examples/example1.byte": use_irc_client_lwt
+# Executable example2
+"examples/example2.byte": pkg_bytes
+"examples/example2.byte": pkg_lwt
+"examples/example2.byte": pkg_lwt.unix
+"examples/example2.byte": use_irc_client
+"examples/example2.byte": use_irc_client_lwt
 <examples/*.ml{,i,y}>: pkg_bytes
 <examples/*.ml{,i,y}>: pkg_lwt
-<examples/*.ml{,i,y}>: pkg_lwt.syntax
 <examples/*.ml{,i,y}>: pkg_lwt.unix
 <examples/*.ml{,i,y}>: use_irc_client
 <examples/*.ml{,i,y}>: use_irc_client_lwt
