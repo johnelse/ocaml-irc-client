@@ -71,7 +71,7 @@ module Make(Io: Irc_transport.IO) = struct
       Io.read connection.sock read_data 0 read_length
       >>= (fun chars_read ->
         if chars_read = 0 (* EOF from server - we have quit or been kicked. *)
-        then return ()
+        then return `Stop
         else begin
           let input = Bytes.sub_string read_data 0 chars_read in
           (* Update the buffer and extract the whole lines. *)
@@ -85,9 +85,12 @@ module Make(Io: Irc_transport.IO) = struct
                 send_pong ~connection ~message:(":"^trail)
               | result ->
                 callback ~connection ~result)
-            whole_lines
+            whole_lines;
+          return `KeepGoing
         end)
-      >>= (fun () -> listen' ~buffer)
+      >>= (function
+          | `Stop -> return ()
+          | `KeepGoing -> listen' ~buffer)
     in
     let buffer = Buffer.create 0 in
     listen' ~buffer
