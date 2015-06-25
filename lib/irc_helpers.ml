@@ -1,35 +1,51 @@
-external (|>) : 'a -> ('a -> 'b) -> 'b = "%revapply"
-
 let split ~str ~c =
-  let rec rev_split' ~str ~c ~acc =
+  (* [i]: current index in [str]
+     [acc]: list of strings split so far *)
+  let rec rev_split' ~str ~i ~c ~acc =
     try
-      let index = String.index str c in
-      let before = String.sub str 0 index in
-      let after = String.sub str (index + 1) (String.length str - index - 1) in
-      rev_split' ~str:after ~c ~acc:(before :: acc)
+      let index = String.index_from str i c in
+      let before = String.sub str i (index-i) in
+      rev_split' ~str ~c ~i:(index+1) ~acc:(before :: acc)
     with Not_found ->
-      str :: acc
+      String.sub str i (String.length str - i) :: acc
   in
-  List.rev (rev_split' ~str ~c ~acc:[])
+  List.rev (rev_split' ~str ~i:0 ~c ~acc:[])
+
+let split1_exn ~str ~c =
+  let index = String.index str c in
+  let before = String.sub str 0 index in
+  let after = String.sub str (index + 1) (String.length str - index - 1) in
+  before, after
+
+let split1 ~str ~c =
+  try Some (split1_exn ~str ~c)
+  with Not_found -> None
 
 let get_whole_lines ~str =
-  let lines =
-    split ~str ~c:'\n'
-    |> List.map String.trim
+  let rec find i acc =
+    try
+      let j = String.index_from str i '\n' in
+      if i=j then find (j+1) acc
+      else
+        let line = String.sub str i (j-i-1) in
+        find (j+1) (line :: acc)
+    with Not_found ->
+      if i=String.length str
+      then List.rev acc, `NoRest
+      else List.rev acc, `Rest (String.sub str i (String.length str - i))
   in
-  let lines_reversed = List.rev lines in
-  (* Get the list of all lines except the last. *)
-  let whole_lines = List.rev (List.tl lines_reversed) in
-  (* Get the last line, which may be partial. *)
-  let rest = List.hd lines_reversed in
-  whole_lines, rest
+  find 0 []
 
-let handle_input ~buffer ~input =
+let pop_lines ~buffer ~input =
   (* Append the new input to the buffer. *)
-  Buffer.add_substring buffer input 0 (String.length input);
-  let whole_lines, rest = get_whole_lines (Buffer.contents buffer) in
+  Buffer.add_string buffer input;
+  let whole_lines, rest = get_whole_lines ~str:(Buffer.contents buffer) in
   (* Replace the buffer contents with the last, partial, line. *)
-  Buffer.reset buffer;
-  Buffer.add_string buffer rest;
+  Buffer.clear buffer;
+  begin match rest with
+    | `NoRest -> ()
+    | `Rest s -> Buffer.add_string buffer s;
+  end;
   (* Return the whole lines extracted from the buffer. *)
   whole_lines
+

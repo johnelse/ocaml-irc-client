@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c6a6183f438c3a5f33f7a27a60a2e378)
+# DO NOT EDIT (digest: 978220b3a866772012997f1ce874164f)
 version = "0.2.1"
 description = "IRC client library"
 requires = "bytes"
@@ -22,7 +22,7 @@ package "unix" (
 package "lwt" (
  version = "0.2.1"
  description = "IRC client library"
- requires = "irc-client lwt lwt.syntax lwt.unix"
+ requires = "irc-client lwt lwt.unix"
  archive(byte) = "irc_client_lwt.cma"
  archive(byte, plugin) = "irc_client_lwt.cma"
  archive(native) = "irc_client_lwt.cmxa"

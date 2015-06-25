@@ -1,8 +1,25 @@
 open OUnit
 
+module H = Irc_helpers
+module M = Irc_message
+
+let pp_strlist l = "[" ^ String.concat ";" l ^ "]"
+
+let test_split =
+  let test1 () =
+    assert_equal ~printer:pp_strlist
+      ["ab"; "c"; "d"; "ef"]
+      (H.split ~str:"ab c d ef" ~c:' ')
+  and test2 () =
+    assert_equal ~printer:pp_strlist
+      [""; "a"; ""; "b"; "hello"; "world"; ""]
+      (H.split ~str:" a  b hello world " ~c:' ')
+  in
+  "test_split" >:::  [ "1" >:: test1; "2" >:: test2 ]
+
 let test_extract_prefix =
   let test ~msg ~input ~expected_output () =
-    let parsed = Irc_message.extract_prefix input in
+    let parsed = M.extract_prefix input in
     assert_equal ~msg parsed expected_output
   in
   "test_extract_prefix" >:::
@@ -19,7 +36,7 @@ let test_extract_prefix =
 
 let test_extract_trail =
   let test ~msg ~input ~expected_output () =
-    let parsed = Irc_message.extract_trail input in
+    let parsed = M.extract_trail input in
     assert_equal ~msg parsed expected_output
   in
   "test_extract_trail" >:::
@@ -38,26 +55,9 @@ let test_extract_trail =
           ~expected_output:("PRIVMSG destnick", Some "hi there");
     ]
 
-let test_extract_command_and_params =
-  let test ~msg ~input ~expected_output () =
-    let parsed = Irc_message.extract_command_and_params input in
-    assert_equal ~msg parsed expected_output
-  in
-  "test_extract_command_and_params" >:::
-    [
-      "test_no_params" >::
-        test ~msg:"Parsing a message with no params"
-          ~input:"PING"
-          ~expected_output:("PING", []);
-      "test_params" >::
-        test ~msg:"Parsing a message with params"
-          ~input:"PRIVMSG destnick"
-          ~expected_output:("PRIVMSG", ["destnick"]);
-    ]
-
 let test_full_parser =
   let test ~msg ~input ~expected_output () =
-    let parsed = Irc_message.parse input in
+    let parsed = M.parse input in
     assert_equal ~msg parsed expected_output
   in
   "test_full_parser" >:::
@@ -65,29 +65,27 @@ let test_full_parser =
       "test_parse_ping" >::
         test ~msg:"Parsing a PING message"
           ~input:"PING :abc.def"
-          ~expected_output:(Irc_message.Message {
-            Irc_message.prefix = None;
-            command = "PING";
-            params = [];
-            trail = Some "abc.def";
+          ~expected_output:(`Ok {
+            M.prefix = None;
+            command = M.PING "abc.def";
+            params = ["abc.def"];
           });
       "test_parse_privmsg" >::
         test ~msg:"Parsing a PRIVMSG"
           ~input:":nick!user@host.com PRIVMSG #channel :Hello all"
-          ~expected_output:(Irc_message.Message {
-            Irc_message.prefix = Some "nick!user@host.com";
-            command = "PRIVMSG";
-            params = ["#channel"];
-            trail = Some "Hello all";
+          ~expected_output:(`Ok {
+            M.prefix = Some "nick!user@host.com";
+            command = M.PRIVMSG ("#channel", "Hello all");
+            params = ["#channel"; "Hello all"];
           });
     ]
 
 let base_suite =
   "base_suite" >:::
     [
+      test_split;
       test_extract_prefix;
       test_extract_trail;
-      test_extract_command_and_params;
       test_full_parser;
     ]
 

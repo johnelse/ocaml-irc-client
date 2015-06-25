@@ -18,32 +18,39 @@ module Make(Io: Irc_transport.IO) = struct
     let length = Bytes.length formatted_data in
     really_write ~connection ~data:formatted_data ~offset:0 ~length
 
+  module M = Irc_message
+
+  let send ~connection msg =
+    send_raw ~connection ~data:(M.to_string msg)
+
   let send_join ~connection ~channel =
-    send_raw ~connection ~data:(Printf.sprintf "JOIN %s" channel)
+    send ~connection (M.join ~chans:[channel] ~keys:None)
 
   let send_nick ~connection ~nick =
-    send_raw ~connection ~data:(Printf.sprintf "NICK %s" nick)
+    send ~connection (M.nick nick)
 
   let send_pass ~connection ~password =
-    send_raw ~connection ~data:(Printf.sprintf "PASS %s" password)
+    send ~connection (M.pass password)
 
   let send_pong ~connection ~message =
-    send_raw ~connection ~data:(Printf.sprintf "PONG %s" message)
+    send ~connection (M.pong message)
 
   let send_privmsg ~connection ~target ~message =
-    send_raw ~connection ~data:(Printf.sprintf "PRIVMSG %s :%s" target message)
+    send ~connection (M.privmsg ~target message)
 
   let send_notice ~connection ~target ~message =
-    send_raw ~connection ~data:(Printf.sprintf "NOTICE %s :%s" target message)
+    send ~connection (M.notice ~target message)
 
   let send_quit ~connection =
-    send_raw ~connection ~data:"QUIT"
+    send ~connection (M.quit ~msg:None)
 
   let send_user ~connection ~username ~mode ~realname =
-    send_raw ~connection
-      ~data:(Printf.sprintf "USER %s %i * :%s" username mode realname)
+    let msg = M.user ~username ~mode ~realname in
+    send ~connection msg
 
-  let connect ~addr ~port ~username ~mode ~realname ~nick ?password () =
+  let connect
+      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
+      ?password ~addr ~port ~nick () =
     Io.open_socket addr port >>= (fun sock ->
       let connection = {sock = sock} in begin
         match password with
@@ -54,8 +61,9 @@ module Make(Io: Irc_transport.IO) = struct
       >>= (fun () -> send_user ~connection ~username ~mode ~realname)
       >>= (fun () -> return connection))
 
-  let connect_by_name ~server ~port ~username ~mode
-      ~realname ~nick ?password () =
+  let connect_by_name
+      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
+      ?password ~server ~port ~nick () =
     Io.gethostbyname server
     >>= (function
       | [] -> Io.return None
@@ -69,26 +77,24 @@ module Make(Io: Irc_transport.IO) = struct
     let rec listen' ~buffer =
       (* Read some data into our string. *)
       Io.read connection.sock read_data 0 read_length
-      >>= (fun chars_read ->
-        if chars_read = 0 (* EOF from server - we have quit or been kicked. *)
-        then return ()
-        else begin
-          let input = Bytes.sub_string read_data 0 chars_read in
-          (* Update the buffer and extract the whole lines. *)
-          let whole_lines = Irc_helpers.handle_input ~buffer ~input in
-          (* Handle the whole lines which were read. *)
-          Io.iter
-            (fun line ->
-              match Irc_message.parse line with
-              | Irc_message.Message {Irc_message.command = "PING"; trail = Some trail} ->
-                (* Handle pings without calling the callback. *)
-                send_pong ~connection ~message:(":"^trail)
-              | result ->
-                callback ~connection ~result)
-            whole_lines
-        end)
-      >>= (fun () -> listen' ~buffer)
+      >>= function
+      | 0 -> return () (* EOF from server - we have quit or been kicked. *)
+      | len ->
+        let input = Bytes.sub_string read_data 0 len in
+        let lines = Irc_helpers.pop_lines ~buffer ~input in
+        let _ = Io.iter
+          (fun line ->
+             match M.parse line with
+             | `Ok {M.command = M.PING message; _} ->
+               (* Handle pings without calling the callback. *)
+               send_pong ~connection ~message
+             | result ->
+               callback connection result
+
+          ) lines
+        in
+        listen' ~buffer
     in
-    let buffer = Buffer.create 0 in
+    let buffer = Buffer.create 256 in
     listen' ~buffer
 end
