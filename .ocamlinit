@@ -1,6 +1,0 @@
-#use "topfind";;
-#require "unix";;
-#directory "_build/lib";;
-#directory "_build/unix";;
-#load "irc_client.cma";;
-#load "irc_client_unix.cma";;
