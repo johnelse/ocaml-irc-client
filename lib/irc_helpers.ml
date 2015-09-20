@@ -36,7 +36,7 @@ let get_whole_lines ~str =
   in
   find 0 []
 
-let pop_lines ~buffer ~input =
+let handle_input ~buffer ~input =
   (* Append the new input to the buffer. *)
   Buffer.add_string buffer input;
   let whole_lines, rest = get_whole_lines ~str:(Buffer.contents buffer) in

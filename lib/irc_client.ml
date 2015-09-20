@@ -81,7 +81,7 @@ module Make(Io: Irc_transport.IO) = struct
       | 0 -> return () (* EOF from server - we have quit or been kicked. *)
       | len ->
         let input = Bytes.sub_string read_data 0 len in
-        let lines = Irc_helpers.pop_lines ~buffer ~input in
+        let lines = Irc_helpers.handle_input ~buffer ~input in
         let _ = Io.iter
           (fun line ->
              match M.parse line with
