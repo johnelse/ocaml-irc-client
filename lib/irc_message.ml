@@ -60,14 +60,14 @@ type parse_result = t or_error
 
 let extract_prefix str =
   if str <> "" && str.[0] = ':'
-  then (
+  then begin
     let prefix_length = (String.index str ' ') - 1 in
     assert (prefix_length >= 0);
     Some (String.sub str 1 prefix_length),
     (String.sub str
       (prefix_length + 2)
       (String.length str - (prefix_length + 2)))
-  ) else
+  end else
     None, str
 
 let extract_trail str =
