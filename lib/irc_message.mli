@@ -84,8 +84,3 @@ val extract_prefix : string -> string option * string
 
 val extract_trail : string -> string * string option
 (** Exposed for testing - not intended for use. *)
-
-(* TODO remove
-val extract_command_and_params : string -> string * string list
-(** Exposed for testing - not intended for use. *)
-   *)
