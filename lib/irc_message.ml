@@ -1,4 +1,3 @@
-
 (** A type representing an IRC command,
     following {{: https://tools.ietf.org/html/rfc2812#section-3} RFC 2812} *)
 type command =
@@ -238,5 +237,3 @@ let to_string t =
   let buf = Buffer.create 64 in
   write_buf buf t;
   Buffer.contents buf
-
-
