@@ -20,16 +20,15 @@ type command =
   | NOTICE of string * string (** target * message *)
   | PING of string
   | PONG of string
-  | Other of string  (** other cases *)
+  | Other of string * (string list) (** command name * parameters *)
 
 type t = {
   prefix: string option;
   command : command;
-  params: string list; (* raw params + trail *)
 }
 
-let make_ cmd = {prefix=None; command=cmd; params=[]}
-let make_other_ cmd params = {prefix=None; command=Other cmd; params; }
+let make_ cmd = {prefix=None; command=cmd}
+let make_other_ cmd params = {prefix=None; command=Other (cmd, params)}
 let unwrap_ or_ = function None -> or_ | Some s -> s
 
 let pass s = make_ (PASS s)
@@ -165,9 +164,9 @@ let parse_exn msg =
         NOTICE (target, msg)
       | "PING" -> PING (expect1 msg params)
       | "PONG" -> PONG (expect1 msg params)
-      | other -> Other other
+      | other -> Other (other, params)
     in
-    { prefix; command; params; }
+    { prefix; command }
 
 let parse s =
   try `Ok (parse_exn s)
@@ -218,7 +217,8 @@ let write_cmd_buf buf t =
   | NOTICE (a,b) -> pp "NOTICE %s %a" a write_trail b
   | PING a -> pp "PING %a" write_trail a
   | PONG a -> pp "PONG %a" write_trail a
-  | Other o -> Printf.bprintf buf "%s %a" o (write_list ~trail:true ' ') t.params
+  | Other (command_name, params) ->
+    Printf.bprintf buf "%s %a" command_name (write_list ~trail:true ' ') params
 
 let write_buf buf t =
   begin match t.prefix with

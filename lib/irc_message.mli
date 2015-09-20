@@ -22,12 +22,11 @@ type command =
   | NOTICE of string * string (** target * message *)
   | PING of string
   | PONG of string
-  | Other of string  (** other cases *)
+  | Other of string * string list  (** other cases *)
 
 type t = {
   prefix: string option;
   command : command;
-  params: string list; (* raw params + trail *)
 }
 
 (** {2 Constructors} *)

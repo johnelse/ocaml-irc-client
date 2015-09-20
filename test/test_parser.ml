@@ -68,7 +68,6 @@ let test_full_parser =
           ~expected_output:(`Ok {
             M.prefix = None;
             command = M.PING "abc.def";
-            params = ["abc.def"];
           });
       "test_parse_privmsg" >::
         test ~msg:"Parsing a PRIVMSG"
@@ -76,7 +75,6 @@ let test_full_parser =
           ~expected_output:(`Ok {
             M.prefix = Some "nick!user@host.com";
             command = M.PRIVMSG ("#channel", "Hello all");
-            params = ["#channel"; "Hello all"];
           });
     ]
 
