@@ -123,9 +123,9 @@ let parse_exn msg =
     fail_ msg "Zero-length message"
   else
     let prefix, rest = extract_prefix msg in
-    let cmd, params = split_space1 rest in
+    let command_name, params = split_space1 rest in
     let params = split_params params in
-    let cmd = match cmd with
+    let command = match command_name with
       | "PASS" -> PASS (expect1 msg params)
       | "NICK" -> NICK (expect1 msg params)
       | "USER" -> USER (split_spaces (expect1 msg params))
@@ -167,7 +167,7 @@ let parse_exn msg =
       | "PONG" -> PONG (expect1 msg params)
       | other -> Other other
     in
-    { prefix; command=cmd; params; }
+    { prefix; command; params; }
 
 let parse s =
   try `Ok (parse_exn s)
