@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 978220b3a866772012997f1ce874164f)
-version = "0.2.1"
+# DO NOT EDIT (digest: 7745cc6880698fd555b33566aaf10574)
+version = "0.3.0"
 description = "IRC client library"
 requires = "bytes"
 archive(byte) = "irc_client.cma"
@@ -9,7 +9,7 @@ archive(native) = "irc_client.cmxa"
 archive(native, plugin) = "irc_client.cmxs"
 exists_if = "irc_client.cma"
 package "unix" (
- version = "0.2.1"
+ version = "0.3.0"
  description = "IRC client library"
  requires = "irc-client"
  archive(byte) = "irc_client_unix.cma"
@@ -20,7 +20,7 @@ package "unix" (
 )
 
 package "lwt" (
- version = "0.2.1"
+ version = "0.3.0"
  description = "IRC client library"
  requires = "irc-client lwt lwt.unix"
  archive(byte) = "irc_client_lwt.cma"

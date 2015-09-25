@@ -1,3 +1,7 @@
+0.3.0 (25-Sep-2015):
+ * Backwards-incompatible changes to Irc_message.t
+ * Some arguments made optional in Irc_client
+
 0.2.1 (23-May-2015):
  * Use Bytes for compatibility with -safe-string
 
