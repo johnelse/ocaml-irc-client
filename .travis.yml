@@ -1,7 +1,10 @@
 language: c
-install: wget https://raw.githubusercontent.com/johnelse/ocaml-travisci-skeleton/master/.travis-opam.sh
-script: PACKAGE=irc-client FORK_USER=johnelse bash -ex .travis-opam.sh
+install:
+  - wget https://raw.githubusercontent.com/johnelse/ocaml-travisci-skeleton/master/.travis-opam.sh
+  - wget https://raw.githubusercontent.com/simonjbeaumont/ocaml-travis-coveralls/master/travis-coveralls.sh
+script: bash -ex .travis-opam.sh && bash -ex travis-coveralls.sh
 env:
-  - OCAML_VERSION=4.00
-  - OCAML_VERSION=4.01
+  global:
+  - PACKAGE=irc-client
+  - FORK_USER=johnelse
   - OCAML_VERSION=4.02
