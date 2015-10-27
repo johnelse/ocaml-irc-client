@@ -7,3 +7,6 @@ setup.log
 
 api.docdir
 *.byte
+
+travis-coveralls.sh
+.coverage/
