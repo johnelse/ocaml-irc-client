@@ -1,0 +1,12 @@
+*.swp
+
+_build
+oUnit-anon.cache
+setup.data
+setup.log
+
+api.docdir
+*.byte
+
+travis-coveralls.sh
+.coverage/

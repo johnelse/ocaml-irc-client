@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Irc_client.html">
+<link rel="next" href="Irc_message.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Irc_client" rel="Chapter" href="Irc_client.html">
+<link title="Irc_helpers" rel="Chapter" href="Irc_helpers.html">
+<link title="Irc_message" rel="Chapter" href="Irc_message.html">
+<link title="Irc_transport" rel="Chapter" href="Irc_transport.html"><title>Irc_helpers</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Irc_client.html" title="Irc_client">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Irc_message.html" title="Irc_message">Next</a>
+</div>
+<h1>Module <a href="type_Irc_helpers.html">Irc_helpers</a></h1>
+
+<pre><span class="keyword">module</span> Irc_helpers: <code class="code"><span class="keyword">sig</span></code> <a href="Irc_helpers.html">..</a> <code class="code"><span class="keyword">end</span></code></pre><div class="info module top">
+Helper functions for buffering data as it is read from a socket.<br>
+</div>
+<hr width="100%">
+
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">str:string -> c:char -> string list</code></pre><div class="info ">
+Split a string <code class="code">str</code> at each occurrence of the character <code class="code">c</code><br>
+</div>
+
+<pre><span id="VALsplit1"><span class="keyword">val</span> split1</span> : <code class="type">str:string -> c:char -> (string * string) option</code></pre><div class="info ">
+<code class="code">split1 ~str ~c</code> returns <code class="code"><span class="constructor">Some</span> (a, b)</code> where <code class="code">a ^ c ^ b = str</code> if
+    it can, or <code class="code"><span class="constructor">None</span></code> otherwise<br>
+</div>
+
+<pre><span id="VALsplit1_exn"><span class="keyword">val</span> split1_exn</span> : <code class="type">str:string -> c:char -> string * string</code></pre><div class="info ">
+Same as <a href="Irc_helpers.html#VALsplit1"><code class="code"><span class="constructor">Irc_helpers</span>.split1</code></a> but unsafe<br>
+<b>Raises</b> <code>Not_found</code> if the separator isn't found<br>
+</div>
+
+<pre><span id="VALhandle_input"><span class="keyword">val</span> handle_input</span> : <code class="type">buffer:Buffer.t -> input:string -> string list</code></pre><div class="info ">
+Given a <code class="code">buffer</code> and a string <code class="code">input</code>, append the input to the buffer,
+    return all whole lines present in the buffer, and reinitialise the buffer to
+    contain only the substring which follows all the whole lines.<br>
+</div>
+</body></html>

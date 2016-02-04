@@ -1,0 +1,22 @@
+0.3.0 (25-Sep-2015):
+ * Backwards-incompatible changes to Irc_message.t
+ * Some arguments made optional in Irc_client
+
+0.2.1 (23-May-2015):
+ * Use Bytes for compatibility with -safe-string
+
+0.2.0 (28-Apr-2014):
+ * Interface tidyup
+ * Add connect_by_name which performs a DNS lookup on a supplied hostname
+ * Add send_notice to send NOTICE commands
+
+0.1.2 (11-Dec-2013):
+ * Make Lwt an optional dependency
+ * Switch build system to oasis
+
+0.1.1 (25-Sep-2013):
+ * conditially compile the Lwt package
+ * tidy the string manipulation code
+
+0.1.0 (30-Apr-2013):
+ * first public release
