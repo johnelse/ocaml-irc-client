@@ -1,14 +1,17 @@
 language: c
 install:
   - wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-opam.sh
+  - wget https://raw.githubusercontent.com/ocaml/ocaml-travisci-skeleton/master/.travis-docgen.sh
   - wget https://raw.githubusercontent.com/simonjbeaumont/ocaml-travis-coveralls/master/travis-coveralls.sh
 script:
   - bash -ex .travis-opam.sh
+  - if [ -n "$DOCS" -a $TRAVIS_BRANCH == "master" ]; then bash -ex .travis-docgen.sh; fi
   - if dpkg --compare-versions $OCAML_VERSION ge 4.02; then bash -ex travis-coveralls.sh; fi
 env:
   global:
     - PACKAGE=irc-client
+    - secure: HMOw08dBgnS19iKTlNeH34G02EJZLJLsC3CBLxJ5qRK+fbryEGAGt7RQ4jWN8JkkxtiFMIcZ7am2HCGZT9nIGDhmUTsJcclR0027LNVE2/Ax+7wdq915qPiFVMh7hMi+SiPFCEKSWEBA3b6RumZFMoUFFfSX4I/0rHzjz6wt0us=
   matrix:
     - OCAML_VERSION=4.00
     - OCAML_VERSION=4.01
-    - OCAML_VERSION=4.02
+    - OCAML_VERSION=4.02 DOCS=true
