@@ -1,4 +1,4 @@
-OASISFormat:  0.3
+OASISFormat:  0.4
 Name:         irc-client
 Version:      0.3.0
 Synopsis:     IRC client library
@@ -6,7 +6,7 @@ License:      MIT
 Authors:      various
 Copyrights:   (C) 2013 John Else
 BuildTools:   ocamlbuild
-Plugins:      META (0.3)
+Plugins:      META (0.4), DevFiles (0.4)
 
 Flag lwt
   Description: build the Lwt library
@@ -73,10 +73,14 @@ Test test_parser
   Command: $test_parser
   WorkingDirectory: test
 
-Document api
+AlphaFeatures: ocamlbuild_more_args
+Document irc_client_api
+  Type: ocamlbuild (0.4)
+  BuildTools: ocamldoc
+
   Title: IRC client library
-  Type: ocamlbuild (0.3)
-  BuildTools+: ocamldoc
-  XOcamlbuildModules: Irc_client, Irc_helpers, Irc_message, Irc_transport
-  XOcamlBuildPath: doc
+  XOcamlBuildPath: .
+  XOCamlbuildExtraArgs:
+    "-docflags '-colorize-code -short-functors -charset utf-8'"
+  XOcamlbuildLibraries: irc-client
   Install: false
