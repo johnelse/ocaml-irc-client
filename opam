@@ -1,5 +1,9 @@
-opam-version: "1"
-maintainer: "john.else@citrix.com"
+opam-version: "1.2"
+authors: "John Else"
+homepage: "https://github.com/johnelse/ocaml-irc-client"
+bug-reports: "https://github.com/johnelse/ocaml-irc-client/issues"
+dev-repo: "git://github.com/johnelse/ocaml-irc-client"
+maintainer: "john.else@gmail.com"
 build: [
   [make]
 ]
@@ -19,4 +23,6 @@ depends: [
   "ocamlfind"
 ]
 depopts: ["lwt"]
-ocaml-version: [>= "4.00.1"]
+available: [
+  ocaml-version >= "4.00.1"
+]
