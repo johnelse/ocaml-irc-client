@@ -62,15 +62,15 @@ Executable example2
   Install: false
   BuildDepends: irc-client.lwt
 
-Executable test_parser
+Executable test_main
   Build$: flag(tests)
   Path: test
-  MainIs: test_parser.ml
+  MainIs: test_main.ml
   Install: false
   BuildDepends: oUnit, irc-client
 
-Test test_parser
-  Command: $test_parser
+Test test_main
+  Command: $test_main
   WorkingDirectory: test
 
 AlphaFeatures: ocamlbuild_more_args

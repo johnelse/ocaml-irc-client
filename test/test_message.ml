@@ -78,14 +78,11 @@ let test_full_parser =
           });
     ]
 
-let base_suite =
-  "base_suite" >:::
+let suite =
+  "test_message" >:::
     [
       test_split;
       test_extract_prefix;
       test_extract_trail;
       test_full_parser;
     ]
-
-let () =
-  OUnit2.run_test_tt_main (ounit2_of_ounit1 base_suite)
