@@ -1,6 +1,11 @@
 module Make(Io: Irc_transport.IO) = struct
   type connection_t = {
     sock: Io.file_descr;
+    buffer: Buffer.t;
+    read_length: int;
+    read_data: Bytes.t; (* for reading *)
+    lines: string Queue.t; (* lines read so far *)
+    mutable terminated: bool;
   }
 
   open Io
@@ -48,18 +53,49 @@ module Make(Io: Irc_transport.IO) = struct
     let msg = M.user ~username ~mode ~realname in
     send ~connection msg
 
+  let mk_connection_ sock =
+    let read_length = 1024 in
+    { sock = sock;
+      buffer=Buffer.create 128;
+      read_length;
+      read_data = Bytes.make read_length ' ';
+      lines = Queue.create ();
+      terminated = false;
+    }
+
+  let rec next_line_ ~connection:c : string option Io.t =
+    if c.terminated
+    then return None
+    else if Queue.length c.lines > 0
+    then return (Some (Queue.pop c.lines))
+    else (
+      (* Read some data into our string. *)
+      Io.read c.sock c.read_data 0 c.read_length
+      >>= function
+      | 0 ->
+        c.terminated <- true;
+        return None (* EOF from server - we have quit or been kicked. *)
+      | len ->
+        (* read some data, push lines into [c.lines] (if any) *)
+        let input = Bytes.sub_string c.read_data 0 len in
+        let lines = Irc_helpers.handle_input ~buffer:c.buffer ~input in
+        List.iter (fun l -> Queue.push l c.lines) lines;
+        next_line_ ~connection:c
+    )
+
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
       ?password ~addr ~port ~nick () =
     Io.open_socket addr port >>= (fun sock ->
-      let connection = {sock = sock} in begin
+      let connection = mk_connection_ sock in
+      begin
         match password with
         | Some password -> send_pass ~connection ~password
         | None -> return ()
       end
-      >>= (fun () -> send_nick ~connection ~nick)
-      >>= (fun () -> send_user ~connection ~username ~mode ~realname)
-      >>= (fun () -> return connection))
+      >>= fun () -> send_nick ~connection ~nick
+      >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () -> return connection)
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
@@ -69,32 +105,21 @@ module Make(Io: Irc_transport.IO) = struct
       | [] -> Io.return None
       | addr :: _ ->
         connect ~addr ~port ~username ~mode ~realname ~nick ?password ()
-        >>= (fun connection -> Io.return (Some connection)))
+        >>= fun connection -> Io.return (Some connection))
 
   let listen ~connection ~callback =
-    let read_length = 1024 in
-    let read_data = Bytes.make read_length ' ' in
-    let rec listen' ~buffer =
-      (* Read some data into our string. *)
-      Io.read connection.sock read_data 0 read_length
+    let rec listen' () =
+      next_line_ ~connection
       >>= function
-      | 0 -> return () (* EOF from server - we have quit or been kicked. *)
-      | len ->
-        let input = Bytes.sub_string read_data 0 len in
-        let lines = Irc_helpers.handle_input ~buffer ~input in
-        let _ = Io.iter
-          (fun line ->
-             match M.parse line with
-             | `Ok {M.command = M.PING message; _} ->
-               (* Handle pings without calling the callback. *)
-               send_pong ~connection ~message
-             | result ->
-               callback connection result
-
-          ) lines
-        in
-        listen' ~buffer
+      | None -> return ()
+      | Some line ->
+        begin match M.parse line with
+          | `Ok {M.command = M.PING message; _} ->
+            (* Handle pings without calling the callback. *)
+            send_pong ~connection ~message
+          | result -> callback connection result
+        end
+        >>= listen'
     in
-    let buffer = Buffer.create 256 in
-    listen' ~buffer
+    listen' ()
 end
