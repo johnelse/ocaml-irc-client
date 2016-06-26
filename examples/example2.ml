@@ -6,7 +6,6 @@ let host = ref "irc.freenode.net"
 let port = ref 6667
 let nick = ref "bobobobot"
 let channel = ref "#demo_irc"
-let sleep = ref 5.
 let message = "Hello, world!  This is a test from ocaml-irc-client"
 
 let string_list_to_string string_list =
@@ -28,6 +27,8 @@ let callback connection result =
     Lwt_io.printl e
 
 let lwt_main =
+  Lwt_io.printl "Connecting..."
+  >>= fun () ->
   C.connect_by_name ~server:!host ~port:!port ~nick:!nick ()
   >>= function
   | None -> Lwt_io.printl "could not find host"
@@ -35,8 +36,7 @@ let lwt_main =
   Lwt_io.printl "Connected"
   >>= fun () ->
   let t = C.listen ~connection ~callback in
-  Lwt_unix.sleep !sleep
-  >>= fun () -> Lwt_io.printl "send join msg"
+  Lwt_io.printl "send join msg"
   >>= fun () -> C.send_join ~connection ~channel:!channel
   >>= fun () -> C.send_privmsg ~connection ~target:!channel ~message
   >>= fun () -> t (* wait for completion of t *)
@@ -46,7 +46,6 @@ let options = Arg.align
   [ "-host", Arg.Set_string host, " set remove server host name"
   ; "-port", Arg.Set_int port, " set remote server port"
   ; "-chan", Arg.Set_string channel, " channel to join"
-  ; "-sleep", Arg.Set_float sleep, " sleep before joining (in s)"
   ]
 
 let _ =
