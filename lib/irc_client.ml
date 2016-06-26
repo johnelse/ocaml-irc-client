@@ -83,6 +83,18 @@ module Make(Io: Irc_transport.IO) = struct
         next_line_ ~connection:c
     )
 
+  let rec wait_for_welcome ~connection =
+    next_line_ ~connection
+    >>= function
+    | None -> return ()
+    | Some line ->
+      match M.parse line with
+        | `Ok {M.command = M.Other ("001", _); _} ->
+          (* we received "RPL_WELCOME", i.e. 001 *)
+          return ()
+        | _ -> wait_for_welcome ~connection
+
+
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
       ?password ~addr ~port ~nick () =
@@ -95,6 +107,7 @@ module Make(Io: Irc_transport.IO) = struct
       end
       >>= fun () -> send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () -> wait_for_welcome ~connection
       >>= fun () -> return connection)
 
   let connect_by_name
