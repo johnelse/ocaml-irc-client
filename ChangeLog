@@ -1,3 +1,6 @@
+0.3.1 (27-Jun-2016):
+ * Wait for RPL_WELCOME before returning from connect
+
 0.3.0 (25-Sep-2015):
  * Backwards-incompatible changes to Irc_message.t
  * Some arguments made optional in Irc_client
