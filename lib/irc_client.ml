@@ -92,6 +92,9 @@ module Make(Io: Irc_transport.IO) = struct
         | `Ok {M.command = M.Other ("001", _); _} ->
           (* we received "RPL_WELCOME", i.e. 001 *)
           return ()
+        | `Ok {M.command = M.PING message; _} ->
+          (* server may ask for ping at any time *)
+          send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
         | _ -> wait_for_welcome ~connection
 
 
