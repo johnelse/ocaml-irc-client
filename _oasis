@@ -38,6 +38,16 @@ Library irc_client_lwt
   NativeOpt: -bin-annot
   Modules: Irc_client_lwt
 
+Library irc_client_lwt_ssl
+  Build$: flag(lwt)
+  Path: lwt_ssl
+  BuildDepends: irc-client, lwt, lwt.unix, ssl,  lwt.ssl, threads
+  Findlibname: lwt_ssl
+  Findlibparent: irc_client
+  ByteOpt: -bin-annot -thread
+  NativeOpt: -bin-annot -thread
+  Modules: Irc_client_lwt_ssl
+
 Library irc_client_unix
   Build$: flag(unix)
   Path: unix
@@ -61,6 +71,13 @@ Executable example2
   MainIs: example2.ml
   Install: false
   BuildDepends: irc-client.lwt
+
+Executable example3
+  Build$: flag(lwt) && flag(examples)
+  Path: examples
+  MainIs: example3.ml
+  Install: false
+  BuildDepends: irc-client.lwt_ssl
 
 Executable test_main
   Build$: flag(tests)
