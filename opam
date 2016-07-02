@@ -22,7 +22,7 @@ depends: [
   "ounit"
   "ocamlfind"
 ]
-depopts: ["lwt", "lwt.ssl"]
+depopts: ["lwt" "ssl"]
 available: [
   ocaml-version >= "4.00.1"
 ]
