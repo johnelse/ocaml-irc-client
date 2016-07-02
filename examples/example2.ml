@@ -26,6 +26,15 @@ let callback connection result =
   | `Error e ->
     Lwt_io.printl e
 
+let options = Arg.align
+  [ "-host", Arg.Set_string host, " set remove server host name"
+  ; "-port", Arg.Set_int port, " set remote server port"
+  ; "-chan", Arg.Set_string channel, " channel to join"
+  ]
+
+let _ =
+  Arg.parse options (fun _ -> ()) "example2 [options]"
+
 let lwt_main =
   Lwt_io.printl "Connecting..."
   >>= fun () ->
@@ -42,14 +51,7 @@ let lwt_main =
   >>= fun () -> t (* wait for completion of t *)
   >>= fun () -> C.send_quit ~connection
 
-let options = Arg.align
-  [ "-host", Arg.Set_string host, " set remove server host name"
-  ; "-port", Arg.Set_int port, " set remote server port"
-  ; "-chan", Arg.Set_string channel, " channel to join"
-  ]
-
 let _ =
-  Arg.parse options (fun _ -> ()) "example2 [options]";
   Lwt_main.run lwt_main
 
 (* ocamlfind ocamlopt -package irc-client.lwt -linkpkg code.ml *)
