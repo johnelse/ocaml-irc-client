@@ -1,4 +1,7 @@
-module Io = struct
+module Io(Params: sig
+    val check_certificate: bool
+    val ssl_protocol: Ssl.protocol
+  end) = struct
   type 'a t = 'a Lwt.t
   let (>>=) = Lwt.bind
   let return = Lwt.return
@@ -14,7 +17,12 @@ module Io = struct
   let open_socket addr port =
     let sock = Lwt_unix.socket Lwt_unix.PF_INET Lwt_unix.SOCK_STREAM 0 in
     let sockaddr = Lwt_unix.ADDR_INET (addr, port) in
-    let ctx = Ssl.create_context Ssl.SSLv23 Ssl.Client_context in
+    let ctx = Ssl.create_context Params.ssl_protocol Ssl.Client_context in
+    if Params.check_certificate then
+      begin
+        Ssl.set_verify ctx [Ssl.Verify_peer] (Some Ssl.client_verify_callback);
+        Ssl.set_verify_depth ctx 3
+      end;
     Lwt_unix.connect sock sockaddr >>= fun () ->
         Lwt_ssl.ssl_connect sock ctx
 
@@ -37,4 +45,10 @@ module Io = struct
   let iter = Lwt_list.iter_s
 end
 
-include Irc_client.Make(Io)
+module Make(Params: sig
+    val check_certificate: bool
+    val ssl_protocol: Ssl.protocol
+  end) = struct
+  module Io = Io(Params)
+  include Irc_client.Make(Io)
+end

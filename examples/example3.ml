@@ -1,5 +1,8 @@
 open Lwt
-module C = Irc_client_lwt_ssl
+module C = Irc_client_lwt_ssl.Make(struct
+    let check_certificate = true
+    let ssl_protocol = Ssl.SSLv23
+  end)
 module M = Irc_message
 
 let host = ref "irc.freenode.net"
