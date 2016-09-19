@@ -1,3 +1,6 @@
+0.3.2 (19-Sep-2016):
+ * Answer pings while establishing connection
+
 0.3.1 (27-Jun-2016):
  * Wait for RPL_WELCOME before returning from connect
 
