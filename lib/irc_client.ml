@@ -89,10 +89,10 @@ module Make(Io: Irc_transport.IO) = struct
     | None -> return ()
     | Some line ->
       match M.parse line with
-        | `Ok {M.command = M.Other ("001", _); _} ->
+        | Result.Ok {M.command = M.Other ("001", _); _} ->
           (* we received "RPL_WELCOME", i.e. 001 *)
           return ()
-        | `Ok {M.command = M.PING message; _} ->
+        | Result.Ok {M.command = M.PING message; _} ->
           (* server may ask for ping at any time *)
           send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
         | _ -> wait_for_welcome ~connection
@@ -130,7 +130,7 @@ module Make(Io: Irc_transport.IO) = struct
       | None -> return ()
       | Some line ->
         begin match M.parse line with
-          | `Ok {M.command = M.PING message; _} ->
+          | Result.Ok {M.command = M.PING message; _} ->
             (* Handle pings without calling the callback. *)
             send_pong ~connection ~message
           | result -> callback connection result

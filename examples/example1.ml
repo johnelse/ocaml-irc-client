@@ -19,9 +19,9 @@ let string_list_to_string string_list =
 let callback _connection result =
   let open Irc_message in
   match result with
-  | `Ok msg ->
+  | Result.Ok msg ->
     Lwt_io.printf "Got message: %s\n" (to_string msg)
-  | `Error e ->
+  | Result.Error e ->
     Lwt_io.printl e
 
 let lwt_main =
