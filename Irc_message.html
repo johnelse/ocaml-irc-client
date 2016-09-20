@@ -279,7 +279,7 @@ Format the message into a string that can be sent on IRC<br>
 <pre><span id="VALwrite_buf"><span class="keyword">val</span> write_buf</span> : <code class="type">Buffer.t -> <a href="Irc_message.html#TYPEt">t</a> -> unit</code></pre><br>
 <h2 id="2_Parsing">Parsing</h2><br>
 
-<pre><span id="TYPEor_error"><span class="keyword">type</span> <code class="type">'a</code> or_error</span> = <code class="type">[ `Error of string | `Ok of 'a ]</code> </pre>
+<pre><span id="TYPEor_error"><span class="keyword">type</span> <code class="type">'a</code> or_error</span> = <code class="type">('a, string) Result.result</code> </pre>
 
 
 <pre><span id="TYPEparse_result"><span class="keyword">type</span> <code class="type"></code>parse_result</span> = <code class="type"><a href="Irc_message.html#TYPEt">t</a> <a href="Irc_message.html#TYPEor_error">or_error</a></code> </pre>
