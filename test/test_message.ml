@@ -65,14 +65,14 @@ let test_full_parser =
       "test_parse_ping" >::
         test ~msg:"Parsing a PING message"
           ~input:"PING :abc.def"
-          ~expected_output:(`Ok {
+          ~expected_output:(Result.Ok {
             M.prefix = None;
             command = M.PING "abc.def";
           });
       "test_parse_privmsg" >::
         test ~msg:"Parsing a PRIVMSG"
           ~input:":nick!user@host.com PRIVMSG #channel :Hello all"
-          ~expected_output:(`Ok {
+          ~expected_output:(Result.Ok {
             M.prefix = Some "nick!user@host.com";
             command = M.PRIVMSG ("#channel", "Hello all");
           });

@@ -53,7 +53,7 @@ let pong s = make_ (PONG s)
 
 let other ~cmd ~params = make_other_ cmd params
 
-type 'a or_error = [`Ok of 'a | `Error of string]
+type 'a or_error = ('a, string) Result.result
 type parse_result = t or_error
 
 let extract_prefix str =
@@ -169,12 +169,12 @@ let parse_exn msg =
     { prefix; command }
 
 let parse s =
-  try `Ok (parse_exn s)
+  try Result.Ok (parse_exn s)
   with
   | ParseError (m, e) ->
-    `Error (Printf.sprintf "failed to parse \"%s\" because: %s" m e)
+    Result.Error (Printf.sprintf "failed to parse \"%s\" because: %s" m e)
   | e ->
-    `Error (Printf.sprintf "unexpected error trying to parse \"%s\": %s"
+    Result.Error (Printf.sprintf "unexpected error trying to parse \"%s\": %s"
               s (Printexc.to_string e))
 
 (* write [s] into [buf], possibly as a ':'-prefixed trail *)

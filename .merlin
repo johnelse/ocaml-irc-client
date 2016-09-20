@@ -1,4 +1,4 @@
-PKG lwt lwt.syntax lwt.unix unix oUnit
+PKG lwt lwt.syntax lwt.unix unix oUnit bytes result
 S examples
 S lib
 S lwt

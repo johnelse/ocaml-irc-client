@@ -63,7 +63,7 @@ val write_buf : Buffer.t -> t -> unit
 
 (** {2 Parsing} *)
 
-type 'a or_error = [`Ok of 'a | `Error of string]
+type 'a or_error = ('a, string) Result.result
 
 type parse_result = t or_error
 

@@ -13,17 +13,17 @@ let string_list_to_string string_list =
 
 let callback connection result =
   match result with
-  | `Ok ({M.command=M.Other _ ; _}as msg) ->
+  | Result.Ok ({M.command=M.Other _ ; _}as msg) ->
     Lwt_io.printf "Got unknown message: %s\n" (M.to_string msg)
     >>= fun () -> Lwt_io.flush Lwt_io.stdout
-  | `Ok ({M.command=M.PRIVMSG (target, data); _} as msg) ->
+  | Result.Ok ({M.command=M.PRIVMSG (target, data); _} as msg) ->
     Lwt_io.printf "Got message: %s\n" (M.to_string msg)
     >>= fun () -> Lwt_io.flush Lwt_io.stdout
     >>= fun () -> C.send_privmsg ~connection ~target ~message:("ack: " ^ data)
-  | `Ok msg ->
+  | Result.Ok msg ->
     Lwt_io.printf "Got message: %s\n" (M.to_string msg)
     >>= fun () -> Lwt_io.flush Lwt_io.stdout
-  | `Error e ->
+  | Result.Error e ->
     Lwt_io.printl e
 
 let lwt_main =

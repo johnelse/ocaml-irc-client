@@ -21,6 +21,7 @@ depends: [
   "oasis" {build}
   "ounit"
   "ocamlfind"
+  "result"
 ]
 depopts: ["lwt"]
 available: [
