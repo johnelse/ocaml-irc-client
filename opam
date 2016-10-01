@@ -5,23 +5,37 @@ bug-reports: "https://github.com/johnelse/ocaml-irc-client/issues"
 dev-repo: "git://github.com/johnelse/ocaml-irc-client"
 maintainer: "john.else@gmail.com"
 build: [
-  [make]
+  [
+    "./configure"
+    "--prefix" prefix
+    "--%{lwt:enable}%-lwt"
+    "--%{base-unix:enable}%-unix"
+    "--enable-docs"
+    "--enable-examples"
+  ]
+  [make "build"]
+]
+build-doc: [
+  [make "doc"]
 ]
 build-test: [
-  [make "doc"]
+  [
+    "./configure"
+    "--enable-tests"
+  ]
   [make "test"]
 ]
 install: [
   [make "PREFIX=%{prefix}%" "install"]
 ]
 remove: [
-  [make "PREFIX=%{prefix}%" "uninstall"]
+  ["ocamlfind" "remove" "irc-client"]
 ]
 depends: [
   "oasis" {build}
-  "ounit"
   "ocamlfind"
   "result"
+  "ounit" {test}
 ]
 depopts: ["lwt"]
 available: [

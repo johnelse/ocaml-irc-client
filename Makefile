@@ -1,53 +1,41 @@
-all: build
+# OASIS_START
+# DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
 
-ocamlfind_check=$(shell ocamlfind query $(1) > /dev/null 2> /dev/null && echo "true")
+SETUP = ocaml setup.ml
 
-LWT=$(call ocamlfind_check,lwt)
-ifeq ($(LWT), true)
-	LWT_FLAG=--enable-lwt
-endif
+build: setup.data
+	$(SETUP) -build $(BUILDFLAGS)
 
-UNIX_FLAG=--enable-unix
+doc: setup.data build
+	$(SETUP) -doc $(DOCFLAGS)
 
-EXAMPLES_FLAG=--enable-examples
+test: setup.data build
+	$(SETUP) -test $(TESTFLAGS)
 
-TESTS_FLAG=--enable-tests
+all:
+	$(SETUP) -all $(ALLFLAGS)
 
-NAME=irc-client
-J=4
+install: setup.data
+	$(SETUP) -install $(INSTALLFLAGS)
 
-setup.data: setup.ml
-	ocaml setup.ml -configure \
-		$(LWT_FLAG) \
-		$(UNIX_FLAG) \
-		$(EXAMPLES_FLAG) \
-		$(TESTS_FLAG) \
+uninstall: setup.data
+	$(SETUP) -uninstall $(UNINSTALLFLAGS)
 
-build: setup.data setup.ml
-	ocaml setup.ml -build -j $(J)
-
-doc: setup.data setup.ml
-	ocaml setup.ml -doc -j $(J)
-
-install: setup.data setup.ml
-	ocaml setup.ml -install
-
-uninstall:
-	ocamlfind remove $(NAME)
-
-test: setup.ml build
-	ocaml setup.ml -test
-
-reinstall: setup.ml
-	ocamlfind remove $(NAME) || true
-	ocaml setup.ml -reinstall
+reinstall: setup.data
+	$(SETUP) -reinstall $(REINSTALLFLAGS)
 
 clean:
-	ocamlbuild -clean
-	rm -f setup.data setup.log
+	$(SETUP) -clean $(CLEANFLAGS)
 
-travis-coveralls.sh:
-	wget https://raw.githubusercontent.com/simonjbeaumont/ocaml-travis-coveralls/master/$@
+distclean:
+	$(SETUP) -distclean $(DISTCLEANFLAGS)
 
-coverage: travis-coveralls.sh
-	bash $<
+setup.data:
+	$(SETUP) -configure $(CONFIGUREFLAGS)
+
+configure:
+	$(SETUP) -configure $(CONFIGUREFLAGS)
+
+.PHONY: build doc test all install uninstall reinstall clean distclean configure
+
+# OASIS_STOP
