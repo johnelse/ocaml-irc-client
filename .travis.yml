@@ -15,3 +15,4 @@ env:
     - OCAML_VERSION=4.00
     - OCAML_VERSION=4.01
     - OCAML_VERSION=4.02 DOCS=true KEEP=false
+    - OCAML_VERSION=4.03
