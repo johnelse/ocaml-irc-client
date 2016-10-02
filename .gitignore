@@ -5,7 +5,7 @@ oUnit-anon.cache
 setup.data
 setup.log
 
-api.docdir
+irc_client_api.docdir
 *.byte
 
 travis-coveralls.sh
