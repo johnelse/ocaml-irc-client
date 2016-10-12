@@ -23,8 +23,6 @@ Flag examples
 Library irc_client
   Path: lib
   Findlibname: irc-client
-  ByteOpt: -bin-annot
-  NativeOpt: -bin-annot
   Modules: Irc_client, Irc_helpers, Irc_message, Irc_transport
   BuildDepends: bytes, result
 
@@ -34,8 +32,6 @@ Library irc_client_lwt
   BuildDepends: irc-client, lwt, lwt.unix
   Findlibname: lwt
   Findlibparent: irc_client
-  ByteOpt: -bin-annot
-  NativeOpt: -bin-annot
   Modules: Irc_client_lwt
 
 Library irc_client_unix
@@ -44,8 +40,6 @@ Library irc_client_unix
   BuildDepends: irc-client
   Findlibname: unix
   Findlibparent: irc_client
-  ByteOpt: -bin-annot
-  NativeOpt: -bin-annot
   Modules: Irc_client_unix
 
 Executable example1
