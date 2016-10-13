@@ -33,7 +33,8 @@ remove: [
 ]
 depends: [
   "oasis" {build}
-  "ocamlfind"
+  "ocamlbuild" {build}
+  "ocamlfind" {build}
   "result"
   "ounit" {test}
 ]
