@@ -37,6 +37,9 @@ module Make(Io: Irc_transport.IO) = struct
   let send_pass ~connection ~password =
     send ~connection (M.pass password)
 
+  let send_ping ~connection ~message =
+    send ~connection (M.ping message)
+
   let send_pong ~connection ~message =
     send ~connection (M.pong message)
 
@@ -97,7 +100,6 @@ module Make(Io: Irc_transport.IO) = struct
           send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
         | _ -> wait_for_welcome ~connection
 
-
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
       ?password ~addr ~port ~nick () =
@@ -123,19 +125,102 @@ module Make(Io: Irc_transport.IO) = struct
         connect ~addr ~port ~username ~mode ~realname ~nick ?password ()
         >>= fun connection -> Io.return (Some connection))
 
-  let listen ~connection ~callback =
-    let rec listen' () =
+  (** Information on keeping the connection alive *)
+  type keepalive = {
+    mode: [`Active | `Passive];
+    timeout: int;
+    reconnect_delay: int option;
+    (* [Some t] means reconnect automatically after [t] seconds *)
+  }
+
+  let default_keepalive: keepalive = {
+    mode=`Active;
+    timeout=60;
+    reconnect_delay = Some 30;
+  }
+
+  type listen_keepalive_state = {
+    mutable last_seen: float;
+    mutable last_active_ping: float;
+    mutable finish: bool;
+  }
+
+  let listen ?(keepalive=default_keepalive) ~connection ~callback =
+    (* main loop *)
+    let rec listen_rec state =
       next_line_ ~connection
       >>= function
       | None -> return ()
       | Some line ->
         begin match M.parse line with
           | Result.Ok {M.command = M.PING message; _} ->
+            (* update "last_seen" field *)
+            let now = Sys.time() in
+            state.last_seen <- max now state.last_seen;
             (* Handle pings without calling the callback. *)
             send_pong ~connection ~message
           | result -> callback connection result
         end
-        >>= listen'
+        >>= fun () ->
+        if state.finish
+        then Io.return ()
+        else listen_rec state
+
+    (* main loop for timeout *)
+    and timeout_thread sleep state =
+      let now = Sys.time() in
+      let time_til_timeout =
+        state.last_seen +. float keepalive.timeout -. now
+      and time_til_ping =
+        state.last_active_ping +. float keepalive.timeout -. now
+      in
+      if time_til_timeout < 0. then (
+        (* done *)
+        state.finish <- true;
+        Io.return ()
+      ) else (
+        (* send "ping" if active mode and it's been long enough *)
+        if keepalive.mode = `Active && time_til_ping < 0. then (
+          state.last_active_ping <- now;
+          send_ping ~connection ~message:"ping"
+        ) else (
+          Io.return ()
+        )
+        >>= fun () ->
+        (* sleep until the due date, then check again *)
+        sleep (time_til_timeout +. 0.5) >>= fun () ->
+        timeout_thread sleep state
+      )
     in
-    listen' ()
+
+    (* main loop: connect, wait for termination, and connect again
+       if [keepalive.reconnect_delay = Some _]. *)
+    let rec connect_loop () =
+      let state = {
+        last_seen = Sys.time();
+        last_active_ping = Sys.time();
+        finish = false;
+      } in
+      (* connect, serve, etc. *)
+      begin match Io.pick, Io.sleep with
+        | Some pick, Some sleep ->
+          pick
+            [ listen_rec state;
+              timeout_thread sleep state;
+            ]
+        | _ ->
+          listen_rec state
+      end
+      (* terminated. Shall we reconnect? *)
+      >>= fun () ->
+      match Io.sleep, keepalive.reconnect_delay with
+        | None, _
+        | _, None -> Io.return () (* nope. *)
+        | Some sleep, Some d ->
+          (* yep. *)
+          sleep (float d) >>= fun () ->
+          connect_loop ()
+    in
+
+    connect_loop ()
 end

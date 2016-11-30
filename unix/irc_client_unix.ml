@@ -26,6 +26,9 @@ module Io = struct
       []
 
   let iter = List.iter
+
+  let pick = None
+  let sleep = None
 end
 
 include Irc_client.Make(Io)

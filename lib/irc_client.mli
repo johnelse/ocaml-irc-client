@@ -51,7 +51,20 @@ module Make : functor (Io: Irc_transport.IO) ->
         {!connect}. Returns [None] if no IP could be found for the given
         name. *)
 
-    val listen : connection:connection_t ->
+    (** Information on keeping the connection alive *)
+    type keepalive = {
+      mode: [`Active | `Passive];
+      timeout: int;
+      reconnect_delay: int option;
+      (* [Some t] means reconnect automatically after [t] seconds *)
+    }
+
+    val default_keepalive : keepalive
+    (** Default value for keepalive: active mode with auto-reconnect *)
+
+    val listen :
+      ?keepalive:keepalive ->
+      connection:connection_t ->
       callback:(
         connection_t ->
         Irc_message.parse_result ->
@@ -60,5 +73,7 @@ module Make : functor (Io: Irc_transport.IO) ->
       unit Io.t
     (** [listen connection callback] listens for incoming messages on
         [connection]. All server pings are handled internally; all other
-        messages are passed, along with [connection], to [callback]. *)
+        messages are passed, along with [connection], to [callback].
+        @param keepalive the behavior on disconnection (if the transport
+          supports {!Irc_transport.IO.pick} and {!Irc_transport.IO.sleep}) *)
   end

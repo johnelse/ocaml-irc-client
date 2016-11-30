@@ -35,7 +35,7 @@ let lwt_main =
   | Some connection ->
   Lwt_io.printl "Connected"
   >>= fun () ->
-  let t = C.listen ~connection ~callback in
+  let t = C.listen ?keepalive:None ~connection ~callback in
   Lwt_io.printl "send join msg"
   >>= fun () -> C.send_join ~connection ~channel:!channel
   >>= fun () -> C.send_privmsg ~connection ~target:!channel ~message
