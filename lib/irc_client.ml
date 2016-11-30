@@ -1,21 +1,10 @@
 module Make(Io: Irc_transport.IO) = struct
-  type connection_params = {
-    username: string;
-    mode: int;
-    realname: string;
-    password: string option;
-    addr: Io.inet_addr;
-    port: int;
-    nick: string;
-  }
-
   type connection_t = {
     sock: Io.file_descr;
     buffer: Buffer.t;
     read_length: int;
     read_data: Bytes.t; (* for reading *)
     lines: string Queue.t; (* lines read so far *)
-    params: connection_params;
     mutable terminated: bool;
   }
 
@@ -75,14 +64,13 @@ module Make(Io: Irc_transport.IO) = struct
     let msg = M.user ~username ~mode ~realname in
     send ~connection msg
 
-  let mk_connection_ sock params =
+  let mk_connection_ sock =
     let read_length = 1024 in
     { sock = sock;
       buffer=Buffer.create 128;
       read_length;
       read_data = Bytes.make read_length ' ';
       lines = Queue.create ();
-      params;
       terminated = false;
     }
 
@@ -120,33 +108,20 @@ module Make(Io: Irc_transport.IO) = struct
           send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
         | _ -> wait_for_welcome ~connection
 
-  let mk_params ~username ~mode ~realname ~password ~addr ~port ~nick ()
-    : connection_params
-    = {
-      username; mode; realname; password; addr; port; nick;
-    }
-
-  let connect_params (p:connection_params) : connection_t Io.t =
-    Io.open_socket p.addr p.port >>= (fun sock ->
-      let connection = mk_connection_ sock p in
-      begin
-        match p.password with
-        | Some password -> send_pass ~connection ~password
-        | None -> return ()
-      end
-      >>= fun () -> send_nick ~connection ~nick:p.nick
-      >>= fun () ->
-        send_user ~connection ~username:p.username ~mode:p.mode ~realname:p.realname
-      >>= fun () -> wait_for_welcome ~connection
-      >>= fun () -> return connection)
-
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
       ?password ~addr ~port ~nick () =
-    let params =
-      mk_params ~username ~mode ~realname ~password ~addr ~port ~nick ()
-    in
-    connect_params params
+    Io.open_socket addr port >>= (fun sock ->
+      let connection = mk_connection_ sock in
+      begin
+        match password with
+        | Some password -> send_pass ~connection ~password
+        | None -> return ()
+      end
+      >>= fun () -> send_nick ~connection ~nick
+      >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () -> wait_for_welcome ~connection
+      >>= fun () -> return connection)
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
@@ -162,14 +137,11 @@ module Make(Io: Irc_transport.IO) = struct
   type keepalive = {
     mode: [`Active | `Passive];
     timeout: int;
-    reconnect_delay: int option;
-    (* [Some t] means reconnect automatically after [t] seconds *)
   }
 
   let default_keepalive: keepalive = {
     mode=`Active;
     timeout=60;
-    reconnect_delay = Some 30;
   }
 
   type listen_keepalive_state = {
@@ -178,7 +150,7 @@ module Make(Io: Irc_transport.IO) = struct
     mutable finish: bool;
   }
 
-  let listen ?(keepalive=default_keepalive) ~connection ~callback =
+  let listen ?(keepalive=default_keepalive) ~connection ~callback () =
     (* main loop *)
     let rec listen_rec state =
       next_line_ ~connection
@@ -201,7 +173,7 @@ module Make(Io: Irc_transport.IO) = struct
         else listen_rec state
 
     (* main loop for timeout *)
-    and timeout_thread sleep state =
+    and timeout_thread state =
       let now = Sys.time() in
       let time_til_timeout =
         state.last_seen +. float keepalive.timeout -. now
@@ -225,41 +197,38 @@ module Make(Io: Irc_transport.IO) = struct
         )
         >>= fun () ->
         (* sleep until the due date, then check again *)
-        sleep (time_til_timeout +. 0.5) >>= fun () ->
-        timeout_thread sleep state
+        Io.sleep (int_of_float time_til_timeout + 1) >>= fun () ->
+        timeout_thread state
       )
     in
+    let state = {
+      last_seen = Sys.time();
+      last_active_ping = Sys.time();
+      finish = false;
+    } in
+    (* connect, serve, etc. *)
+    begin match Io.pick with
+      | Some pick ->
+        pick
+          [ listen_rec state;
+            timeout_thread state;
+          ]
+      | _ ->
+        listen_rec state
+    end
 
-    (* main loop: connect, wait for termination, and connect again
-       if [keepalive.reconnect_delay = Some _]. *)
-    let rec connect_loop connection =
-      let state = {
-        last_seen = Sys.time();
-        last_active_ping = Sys.time();
-        finish = false;
-      } in
-      (* connect, serve, etc. *)
-      begin match Io.pick, Io.sleep with
-        | Some pick, Some sleep ->
-          pick
-            [ listen_rec state;
-              timeout_thread sleep state;
-            ]
-        | _ ->
-          listen_rec state
-      end
-      (* terminated. Shall we reconnect? *)
-      >>= fun () ->
-      match Io.sleep, keepalive.reconnect_delay with
-        | None, _
-        | _, None -> Io.return () (* nope. *)
-        | Some sleep, Some d ->
-          (* yep. *)
-          sleep (float d) >>= fun () ->
-          log "try to reconnect..." >>= fun () ->
-          connect_params connection.params >>= fun connection ->
-          connect_loop connection
+  let reconnect_loop ?keepalive ~after ~connect ~f ~callback () =
+    let rec aux () =
+      connect () >>= function
+      | None -> log "could not connect" >>= aux
+      | Some connection ->
+        let t = listen ?keepalive ~connection ~callback () in
+        f connection >>= fun () ->
+        t >>= fun () ->
+        log "connection terminated." >>= fun () ->
+        Io.sleep after >>= fun () ->
+        log "try to reconnect..." >>= fun () ->
+        aux ()
     in
-
-    connect_loop connection
+    aux ()
 end

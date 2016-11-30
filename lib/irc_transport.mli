@@ -22,9 +22,8 @@ module type IO = sig
 
   val iter : ('a -> unit t) -> 'a list -> unit t
 
-  val sleep : (float -> unit t) option
-  (** OPTIONAL
-      [sleep t] starts a thread that sleeps for [t] seconds, then returns. *)
+  val sleep : int -> unit t
+  (* [sleep t] sleeps for [t] seconds, then returns. *)
 
   val pick : ('a t list -> 'a t) option
   (** OPTIONAL

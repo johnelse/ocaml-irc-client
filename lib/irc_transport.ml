@@ -17,6 +17,6 @@ module type IO = sig
 
   val iter : ('a -> unit t) -> 'a list -> unit t
 
-  val sleep : (float -> unit t) option
+  val sleep : int -> unit t
   val pick : ('a t list -> 'a t) option
 end

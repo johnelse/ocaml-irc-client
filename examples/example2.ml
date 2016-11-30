@@ -28,20 +28,20 @@ let callback connection result =
 
 let lwt_main =
   C.set_log Lwt_io.printl;
-  Lwt_io.printl "Connecting..."
-  >>= fun () ->
-  C.connect_by_name ~server:!host ~port:!port ~nick:!nick ()
-  >>= function
-  | None -> Lwt_io.printl "could not find host"
-  | Some connection ->
-  Lwt_io.printl "Connected"
-  >>= fun () ->
-  let t = C.listen ?keepalive:None ~connection ~callback in
-  Lwt_io.printl "send join msg"
-  >>= fun () -> C.send_join ~connection ~channel:!channel
-  >>= fun () -> C.send_privmsg ~connection ~target:!channel ~message
-  >>= fun () -> t (* wait for completion of t *)
-  >>= fun () -> C.send_quit ~connection
+  C.reconnect_loop
+    ~after:30
+    ~connect:(fun () ->
+      Lwt_io.printl "Connecting..." >>= fun () ->
+      C.connect_by_name ~server:!host ~port:!port ~nick:!nick ()
+    )
+    ~f:(fun connection ->
+      Lwt_io.printl "Connected" >>= fun () ->
+      Lwt_io.printl "send join msg" >>= fun () ->
+      C.send_join ~connection ~channel:!channel >>= fun () ->
+      C.send_privmsg ~connection ~target:!channel ~message
+    )
+    ~callback
+    ()
 
 let options = Arg.align
   [ "-host", Arg.Set_string host, " set remove server host name"

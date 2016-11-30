@@ -30,9 +30,9 @@ module Io = struct
       )
 
   let iter = Lwt_list.iter_s
+  let sleep d = Lwt_unix.sleep (float d)
 
   let pick = Some Lwt.pick
-  let sleep = Some Lwt_unix.sleep
 end
 
 include Irc_client.Make(Io)
