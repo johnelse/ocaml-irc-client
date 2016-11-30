@@ -1,12 +1,31 @@
 module Make(Io: Irc_transport.IO) = struct
+  type connection_params = {
+    username: string;
+    mode: int;
+    realname: string;
+    password: string option;
+    addr: Io.inet_addr;
+    port: int;
+    nick: string;
+  }
+
   type connection_t = {
     sock: Io.file_descr;
     buffer: Buffer.t;
     read_length: int;
     read_data: Bytes.t; (* for reading *)
     lines: string Queue.t; (* lines read so far *)
+    params: connection_params;
     mutable terminated: bool;
   }
+
+  (* logging *)
+
+  let log_ : (string -> unit Io.t) ref = ref (fun _ -> Io.return ())
+  let set_log f = log_ := f
+
+  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Sys.time()) s)
+  let logf s = Printf.ksprintf log s
 
   open Io
 
@@ -56,13 +75,14 @@ module Make(Io: Irc_transport.IO) = struct
     let msg = M.user ~username ~mode ~realname in
     send ~connection msg
 
-  let mk_connection_ sock =
+  let mk_connection_ sock params =
     let read_length = 1024 in
     { sock = sock;
       buffer=Buffer.create 128;
       read_length;
       read_data = Bytes.make read_length ' ';
       lines = Queue.create ();
+      params;
       terminated = false;
     }
 
@@ -100,20 +120,33 @@ module Make(Io: Irc_transport.IO) = struct
           send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
         | _ -> wait_for_welcome ~connection
 
-  let connect
-      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ~addr ~port ~nick () =
-    Io.open_socket addr port >>= (fun sock ->
-      let connection = mk_connection_ sock in
+  let mk_params ~username ~mode ~realname ~password ~addr ~port ~nick ()
+    : connection_params
+    = {
+      username; mode; realname; password; addr; port; nick;
+    }
+
+  let connect_params (p:connection_params) : connection_t Io.t =
+    Io.open_socket p.addr p.port >>= (fun sock ->
+      let connection = mk_connection_ sock p in
       begin
-        match password with
+        match p.password with
         | Some password -> send_pass ~connection ~password
         | None -> return ()
       end
-      >>= fun () -> send_nick ~connection ~nick
-      >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () -> send_nick ~connection ~nick:p.nick
+      >>= fun () ->
+        send_user ~connection ~username:p.username ~mode:p.mode ~realname:p.realname
       >>= fun () -> wait_for_welcome ~connection
       >>= fun () -> return connection)
+
+  let connect
+      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
+      ?password ~addr ~port ~nick () =
+    let params =
+      mk_params ~username ~mode ~realname ~password ~addr ~port ~nick ()
+    in
+    connect_params params
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
@@ -158,6 +191,7 @@ module Make(Io: Irc_transport.IO) = struct
             let now = Sys.time() in
             state.last_seen <- max now state.last_seen;
             (* Handle pings without calling the callback. *)
+            log "reply pong to server" >>= fun () ->
             send_pong ~connection ~message
           | result -> callback connection result
         end
@@ -176,12 +210,15 @@ module Make(Io: Irc_transport.IO) = struct
       in
       if time_til_timeout < 0. then (
         (* done *)
+        log "client timeout" >>= fun () ->
         state.finish <- true;
-        Io.return ()
+        (* try to wake up the listening thread, so it can die *)
+        really_write ~connection ~data:"\n" ~offset:0 ~length:1
       ) else (
         (* send "ping" if active mode and it's been long enough *)
         if keepalive.mode = `Active && time_til_ping < 0. then (
           state.last_active_ping <- now;
+          log "send ping to server..." >>= fun () ->
           send_ping ~connection ~message:"ping"
         ) else (
           Io.return ()
@@ -195,7 +232,7 @@ module Make(Io: Irc_transport.IO) = struct
 
     (* main loop: connect, wait for termination, and connect again
        if [keepalive.reconnect_delay = Some _]. *)
-    let rec connect_loop () =
+    let rec connect_loop connection =
       let state = {
         last_seen = Sys.time();
         last_active_ping = Sys.time();
@@ -219,8 +256,10 @@ module Make(Io: Irc_transport.IO) = struct
         | Some sleep, Some d ->
           (* yep. *)
           sleep (float d) >>= fun () ->
-          connect_loop ()
+          log "try to reconnect..." >>= fun () ->
+          connect_params connection.params >>= fun connection ->
+          connect_loop connection
     in
 
-    connect_loop ()
+    connect_loop connection
 end

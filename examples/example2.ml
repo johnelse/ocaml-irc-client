@@ -27,6 +27,7 @@ let callback connection result =
     Lwt_io.printl e
 
 let lwt_main =
+  C.set_log Lwt_io.printl;
   Lwt_io.printl "Connecting..."
   >>= fun () ->
   C.connect_by_name ~server:!host ~port:!port ~nick:!nick ()

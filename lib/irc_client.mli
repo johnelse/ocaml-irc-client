@@ -76,4 +76,7 @@ module Make : functor (Io: Irc_transport.IO) ->
         messages are passed, along with [connection], to [callback].
         @param keepalive the behavior on disconnection (if the transport
           supports {!Irc_transport.IO.pick} and {!Irc_transport.IO.sleep}) *)
+
+    val set_log : (string -> unit Io.t) -> unit
+    (** Set logging function *)
   end
