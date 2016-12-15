@@ -160,6 +160,33 @@ module Make(Io: Irc_transport.IO) = struct
     mutable finish: bool;
   }
 
+  (* main loop for pinging server actively *)
+  let active_ping_thread keepalive state ~connection =
+    let rec loop () =
+      assert (keepalive.mode = `Active);
+      let now = Sys.time() in
+      let time_til_ping =
+        state.last_active_ping +. float keepalive.timeout -. now
+      in
+      if state.finish then (
+        Io.return ()
+      ) else (
+        (* send "ping" if active mode and it's been long enough *)
+        if time_til_ping < 0. then (
+          state.last_active_ping <- now;
+          log "send ping to server..." >>= fun () ->
+          send_ping ~connection ~message:"ping"
+        ) else (
+          Io.return ()
+        )
+          >>= fun () ->
+          (* sleep until the due date, then check again *)
+          Io.sleep (int_of_float time_til_ping + 1) >>= fun () ->
+          loop ()
+      )
+    in
+    loop ()
+
   let listen ?(keepalive=default_keepalive) ~connection ~callback () =
     (* main loop *)
     let rec listen_rec state =
@@ -167,10 +194,12 @@ module Make(Io: Irc_transport.IO) = struct
       let timeout = state.last_seen +. float keepalive.timeout -. Sys.time () in
       next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
-      | Timeout
+      | Timeout ->
+        state.finish <- true;
+        log "client timeout"
       | End ->
         state.finish <- true;
-        return ()
+        log "connection closed"
       | Read line ->
         begin match M.parse line with
           | Result.Ok {M.command = M.PING message; _} ->
@@ -179,41 +208,16 @@ module Make(Io: Irc_transport.IO) = struct
             (* Handle pings without calling the callback. *)
             log "reply pong to server" >>= fun () ->
             send_pong ~connection ~message
+          | Result.Ok {M.command = M.PONG _; _} ->
+            (* active response from server, update "last_seen" field *)
+            state.last_seen <- max now state.last_seen;
+            Io.return ()
           | result -> callback connection result
         end
         >>= fun () ->
         if state.finish
         then Io.return ()
         else listen_rec state
-
-    (* main loop for timeout *)
-    and timeout_thread state =
-      let now = Sys.time() in
-      let time_til_timeout =
-        state.last_seen +. float keepalive.timeout -. now
-      and time_til_ping =
-        state.last_active_ping +. float keepalive.timeout -. now
-      in
-      if time_til_timeout < 0. then (
-        (* done *)
-        log "client timeout" >>= fun () ->
-        state.finish <- true;
-        (* try to wake up the listening thread, so it can die *)
-        really_write ~connection ~data:"\n" ~offset:0 ~length:1
-      ) else (
-        (* send "ping" if active mode and it's been long enough *)
-        if keepalive.mode = `Active && time_til_ping < 0. then (
-          state.last_active_ping <- now;
-          log "send ping to server..." >>= fun () ->
-          send_ping ~connection ~message:"ping"
-        ) else (
-          Io.return ()
-        )
-        >>= fun () ->
-        (* sleep until the due date, then check again *)
-        Io.sleep (int_of_float time_til_timeout + 1) >>= fun () ->
-        timeout_thread state
-      )
     in
     let state = {
       last_seen = Sys.time();
@@ -222,10 +226,10 @@ module Make(Io: Irc_transport.IO) = struct
     } in
     (* connect, serve, etc. *)
     begin match Io.pick with
-      | Some pick ->
+      | Some pick when keepalive.mode = `Active ->
         pick
           [ listen_rec state;
-            timeout_thread state;
+            active_ping_thread keepalive state ~connection;
           ]
       | _ ->
         listen_rec state
