@@ -74,39 +74,49 @@ module Make(Io: Irc_transport.IO) = struct
       terminated = false;
     }
 
-  let rec next_line_ ~connection:c : string option Io.t =
+  type 'a input_res =
+    | Read of 'a
+    | Timeout
+    | End
+
+  let rec next_line_ ~timeout ~connection:c : string input_res Io.t =
     if c.terminated
-    then return None
+    then return End
     else if Queue.length c.lines > 0
-    then return (Some (Queue.pop c.lines))
+    then return (Read (Queue.pop c.lines))
     else (
       (* Read some data into our string. *)
-      Io.read c.sock c.read_data 0 c.read_length
+      Io.read_with_timeout ~timeout c.sock c.read_data 0 c.read_length
       >>= function
-      | 0 ->
+      | None -> return Timeout
+      | Some 0 ->
         c.terminated <- true;
-        return None (* EOF from server - we have quit or been kicked. *)
-      | len ->
+        return End (* EOF from server - we have quit or been kicked. *)
+      | Some len ->
         (* read some data, push lines into [c.lines] (if any) *)
         let input = Bytes.sub_string c.read_data 0 len in
         let lines = Irc_helpers.handle_input ~buffer:c.buffer ~input in
         List.iter (fun l -> Queue.push l c.lines) lines;
-        next_line_ ~connection:c
+        next_line_ ~timeout ~connection:c
     )
 
-  let rec wait_for_welcome ~connection =
-    next_line_ ~connection
+  let welcome_timeout = 30
+
+  let rec wait_for_welcome ~timeout ~connection =
+    next_line_ ~timeout ~connection
     >>= function
-    | None -> return ()
-    | Some line ->
+    | Timeout
+    | End -> return ()
+    | Read line ->
       match M.parse line with
         | Result.Ok {M.command = M.Other ("001", _); _} ->
           (* we received "RPL_WELCOME", i.e. 001 *)
           return ()
         | Result.Ok {M.command = M.PING message; _} ->
           (* server may ask for ping at any time *)
-          send_pong ~connection ~message >>= fun () -> wait_for_welcome ~connection
-        | _ -> wait_for_welcome ~connection
+          send_pong ~connection ~message >>= fun () ->
+          wait_for_welcome ~timeout ~connection
+        | _ -> wait_for_welcome ~timeout:welcome_timeout ~connection
 
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
@@ -120,7 +130,7 @@ module Make(Io: Irc_transport.IO) = struct
       end
       >>= fun () -> send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
-      >>= fun () -> wait_for_welcome ~connection
+      >>= fun () -> wait_for_welcome ~timeout:welcome_timeout ~connection
       >>= fun () -> return connection)
 
   let connect_by_name
@@ -153,14 +163,18 @@ module Make(Io: Irc_transport.IO) = struct
   let listen ?(keepalive=default_keepalive) ~connection ~callback () =
     (* main loop *)
     let rec listen_rec state =
-      next_line_ ~connection
+      let now = Sys.time() in
+      let timeout = state.last_seen +. float keepalive.timeout -. Sys.time () in
+      next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
-      | None -> return ()
-      | Some line ->
+      | Timeout
+      | End ->
+        state.finish <- true;
+        return ()
+      | Read line ->
         begin match M.parse line with
           | Result.Ok {M.command = M.PING message; _} ->
             (* update "last_seen" field *)
-            let now = Sys.time() in
             state.last_seen <- max now state.last_seen;
             (* Handle pings without calling the callback. *)
             log "reply pong to server" >>= fun () ->

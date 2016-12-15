@@ -16,6 +16,11 @@ module type IO = sig
   val read : file_descr -> Bytes.t -> int -> int -> int t
   val write : file_descr -> Bytes.t -> int -> int -> int t
 
+  val read_with_timeout : timeout:int -> file_descr -> Bytes.t -> int -> int -> int option t
+  (** [read_with_timeout ~timeout fd buf off len] returns [Some n] if it
+      could read [n] bytes into [buf] (slice [off,...,off+len-1]),
+      or [None] if nothing was read before [timeout] seconds. *)
+
   val gethostbyname : string -> inet_addr list t
   (** List of IPs that correspond to the given hostname (or an empty
       list if none is found) *)

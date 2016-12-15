@@ -18,6 +18,12 @@ module Io = struct
   let read = Unix.read
   let write = Unix.write
 
+  let read_with_timeout ~timeout fd buf off len =
+    match Unix.select [fd] [] [] (float timeout) with
+      | [fd], _, _ -> Some (Unix.read fd buf off len)
+      | [], _, _ -> None
+      | _ -> assert false
+
   let gethostbyname name =
     try
       let entry = Unix.gethostbyname name in
