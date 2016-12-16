@@ -13,7 +13,12 @@ module type IO = sig
   val read : file_descr -> Bytes.t -> int -> int -> int t
   val write : file_descr -> Bytes.t -> int -> int -> int t
 
+  val read_with_timeout : timeout:int -> file_descr -> Bytes.t -> int -> int -> int option t
+
   val gethostbyname : string -> inet_addr list t
 
   val iter : ('a -> unit t) -> 'a list -> unit t
+
+  val sleep : int -> unit t
+  val pick : ('a t list -> 'a t) option
 end

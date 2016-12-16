@@ -18,6 +18,13 @@ module Io = struct
   let read = Lwt_unix.read
   let write = Lwt_unix.write
 
+  let read_with_timeout ~timeout fd buf off len =
+    let open Lwt.Infix in
+    Lwt.pick
+      [ (read fd buf off len >|= fun i -> Some i);
+        (Lwt_unix.sleep (float timeout) >|= fun () -> None);
+      ]
+
   let gethostbyname name =
     Lwt.catch
       (fun () ->
@@ -30,6 +37,9 @@ module Io = struct
       )
 
   let iter = Lwt_list.iter_s
+  let sleep d = Lwt_unix.sleep (float d)
+
+  let pick = Some Lwt.pick
 end
 
 include Irc_client.Make(Io)

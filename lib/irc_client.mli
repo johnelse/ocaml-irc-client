@@ -51,14 +51,50 @@ module Make : functor (Io: Irc_transport.IO) ->
         {!connect}. Returns [None] if no IP could be found for the given
         name. *)
 
-    val listen : connection:connection_t ->
+    (** Information on keeping the connection alive *)
+    type keepalive = {
+      mode: [`Active | `Passive];
+      timeout: int;
+    }
+
+    val default_keepalive : keepalive
+    (** Default value for keepalive: active mode with auto-reconnect *)
+
+    val listen :
+      ?keepalive:keepalive ->
+      connection:connection_t ->
       callback:(
         connection_t ->
         Irc_message.parse_result ->
-        unit Io.t
-      ) ->
+        unit Io.t) ->
+      unit ->
       unit Io.t
     (** [listen connection callback] listens for incoming messages on
         [connection]. All server pings are handled internally; all other
-        messages are passed, along with [connection], to [callback]. *)
+        messages are passed, along with [connection], to [callback].
+        @param keepalive the behavior on disconnection (if the transport
+          supports {!Irc_transport.IO.pick} and {!Irc_transport.IO.sleep}) *)
+
+    val reconnect_loop :
+      ?keepalive:keepalive ->
+      after:int ->
+      connect:(unit -> connection_t option Io.t) ->
+      f:(connection_t -> unit Io.t) ->
+      callback:(
+        connection_t ->
+        Irc_message.parse_result ->
+        unit Io.t) ->
+      unit ->
+      unit Io.t
+    (** A combination of {!connect} and {!listen} that, every time
+        the connection is terminated, tries to start a new one
+        after [after] seconds.
+        @param after time before trying to reconnect
+        @param connect how to reconnect
+          (a closure over {!connect} or {!connect_by_name})
+        @param callback the callback for {!listen}
+        @param f the function to call after connection *)
+
+    val set_log : (string -> unit Io.t) -> unit
+    (** Set logging function *)
   end
