@@ -1,8 +1,8 @@
 open Lwt
 module C = Irc_client_lwt
 
-let host = "totoritoto.gogol.zoooooopt.blah"
-let port = 16667
+let host = "localhost"
+let port = 6667
 let realname = "Demo IRC bot"
 let nick = "demoirc"
 let username = nick
