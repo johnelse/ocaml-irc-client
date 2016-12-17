@@ -65,5 +65,5 @@ Compile the above with:
 ocamlfind ocamlopt -package irc-client.lwt -linkpkg code.ml
 ```
 
-Alternatively, you can find it under the examples/ directory as exampel1.ml;
-enable its compilation during config time with --enable-examples.
+Alternatively, you can find it at `examples/example1.ml`; enable its compilation
+with `./configure --enable-examples --enable-lwt`.
