@@ -35,6 +35,12 @@ Try to resolve the <code class="code">server</code> name using DNS, otherwise be
         <code class="code">connect</code>.
 </div>
 </td></tr>
+<tr><td align="left"><br>D</td></tr>
+<tr><td><a href="Irc_client.Make.html#VALdefault_keepalive">default_keepalive</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<td><div class="info">
+Default value for keepalive: active mode with auto-reconnect
+</div>
+</td></tr>
 <tr><td align="left"><br>E</td></tr>
 <tr><td><a href="Irc_message.html#VALextract_prefix">extract_prefix</a> [<a href="Irc_message.html">Irc_message</a>]</td>
 <td><div class="info">
@@ -117,6 +123,13 @@ Attempt to parse an IRC message.
 <td></td></tr>
 <tr><td><a href="Irc_message.html#VALpass">pass</a> [<a href="Irc_message.html">Irc_message</a>]</td>
 <td></td></tr>
+<tr><td><a href="Irc_transport.IO.html#VALpick">pick</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
+<td><div class="info">
+OPTIONAL
+      <code class="code">pick l</code> returns the first  thread of <code class="code">l</code> that terminates (and might
+      cancel the others)
+</div>
+</td></tr>
 <tr><td><a href="Irc_message.html#VALping">ping</a> [<a href="Irc_message.html">Irc_message</a>]</td>
 <td></td></tr>
 <tr><td><a href="Irc_message.html#VALpong">pong</a> [<a href="Irc_message.html">Irc_message</a>]</td>
@@ -129,6 +142,20 @@ Attempt to parse an IRC message.
 <tr><td align="left"><br>R</td></tr>
 <tr><td><a href="Irc_transport.IO.html#VALread">read</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
 <td></td></tr>
+<tr><td><a href="Irc_transport.IO.html#VALread_with_timeout">read_with_timeout</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
+<td><div class="info">
+<code class="code">read_with_timeout ~timeout fd buf off len</code> returns <code class="code"><span class="constructor">Some</span> n</code> if it
+      could read <code class="code">n</code> bytes into <code class="code">buf</code> (slice <code class="code">off,...,off+len-1</code>),
+      or <code class="code"><span class="constructor">None</span></code> if nothing was read before <code class="code">timeout</code> seconds.
+</div>
+</td></tr>
+<tr><td><a href="Irc_client.Make.html#VALreconnect_loop">reconnect_loop</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<td><div class="info">
+A combination of <code class="code">connect</code> and <code class="code">listen</code> that, every time
+        the connection is terminated, tries to start a new one
+        after <code class="code">after</code> seconds.
+</div>
+</td></tr>
 <tr><td><a href="Irc_transport.IO.html#VALreturn">return</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>S</td></tr>
@@ -177,6 +204,13 @@ Send the QUIT command.
 Send the USER command.
 </div>
 </td></tr>
+<tr><td><a href="Irc_client.Make.html#VALset_log">set_log</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<td><div class="info">
+Set logging function
+</div>
+</td></tr>
+<tr><td><a href="Irc_transport.IO.html#VALsleep">sleep</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
+<td></td></tr>
 <tr><td><a href="Irc_helpers.html#VALsplit">split</a> [<a href="Irc_helpers.html">Irc_helpers</a>]</td>
 <td><div class="info">
 Split a string <code class="code">str</code> at each occurrence of the character <code class="code">c</code>

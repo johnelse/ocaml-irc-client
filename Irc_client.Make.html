@@ -89,9 +89,52 @@ Try to resolve the <code class="code">server</code> name using DNS, otherwise be
         name.<br>
 </div>
 
-<pre><span id="VALlisten"><span class="keyword">val</span> listen</span> : <code class="type">connection:<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -><br>       callback:(<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -><br>                 <a href="Irc_message.html#TYPEparse_result">Irc_message.parse_result</a> -> unit Io.t) -><br>       unit Io.t</code></pre><div class="info ">
+<pre><code><span id="TYPEkeepalive"><span class="keyword">type</span> <code class="type"></code>keepalive</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkeepalive.mode">mode</span>&nbsp;: <code class="type">[ `Active | `Passive ]</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkeepalive.timeout">timeout</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+Information on keeping the connection alive<br>
+</div>
+
+
+<pre><span id="VALdefault_keepalive"><span class="keyword">val</span> default_keepalive</span> : <code class="type"><a href="Irc_client.Make.html#TYPEkeepalive">keepalive</a></code></pre><div class="info ">
+Default value for keepalive: active mode with auto-reconnect<br>
+</div>
+
+<pre><span id="VALlisten"><span class="keyword">val</span> listen</span> : <code class="type">?keepalive:<a href="Irc_client.Make.html#TYPEkeepalive">keepalive</a> -><br>       connection:<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -><br>       callback:(<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -><br>                 <a href="Irc_message.html#TYPEparse_result">Irc_message.parse_result</a> -> unit Io.t) -><br>       unit -> unit Io.t</code></pre><div class="info ">
 <code class="code">listen connection callback</code> listens for incoming messages on
         <code class="code">connection</code>. All server pings are handled internally; all other
         messages are passed, along with <code class="code">connection</code>, to <code class="code">callback</code>.<br>
+</div>
+<div class="param_info"><code class="code">keepalive</code> : the behavior on disconnection (if the transport
+          supports <code class="code"><span class="constructor">Irc_transport</span>.<span class="constructor">IO</span>.pick</code> and <code class="code"><span class="constructor">Irc_transport</span>.<span class="constructor">IO</span>.sleep</code>)</div>
+
+<pre><span id="VALreconnect_loop"><span class="keyword">val</span> reconnect_loop</span> : <code class="type">?keepalive:<a href="Irc_client.Make.html#TYPEkeepalive">keepalive</a> -><br>       after:int -><br>       connect:(unit -> <a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> option Io.t) -><br>       f:(<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -> unit Io.t) -><br>       callback:(<a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> -><br>                 <a href="Irc_message.html#TYPEparse_result">Irc_message.parse_result</a> -> unit Io.t) -><br>       unit -> unit Io.t</code></pre><div class="info ">
+A combination of <code class="code">connect</code> and <code class="code">listen</code> that, every time
+        the connection is terminated, tries to start a new one
+        after <code class="code">after</code> seconds.<br>
+</div>
+<div class="param_info"><code class="code">after</code> : time before trying to reconnect</div>
+<div class="param_info"><code class="code">connect</code> : how to reconnect
+          (a closure over <code class="code">connect</code> or <code class="code">connect_by_name</code>)</div>
+<div class="param_info"><code class="code">f</code> : the function to call after connection</div>
+<div class="param_info"><code class="code">callback</code> : the callback for <code class="code">listen</code></div>
+
+<pre><span id="VALset_log"><span class="keyword">val</span> set_log</span> : <code class="type">(string -> unit Io.t) -> unit</code></pre><div class="info ">
+Set logging function<br>
 </div>
 </body></html>
