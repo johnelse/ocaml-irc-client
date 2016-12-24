@@ -3,10 +3,6 @@
 val split : str:string -> c:char -> string list
 (** Split a string [str] at each occurrence of the character [c] *)
 
-val split1 : str:string -> c:char -> (string * string) option
-(** [split1 ~str ~c] returns [Some (a, b)] where [a ^ c ^ b = str] if
-    it can, or [None] otherwise *)
-
 val split1_exn : str:string -> c:char -> string * string
 (** Same as {!split1} but unsafe
     @raise Not_found if the separator isn't found *)

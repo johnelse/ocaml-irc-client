@@ -17,10 +17,6 @@ let split1_exn ~str ~c =
   let after = String.sub str (index + 1) (String.length str - index - 1) in
   before, after
 
-let split1 ~str ~c =
-  try Some (split1_exn ~str ~c)
-  with Not_found -> None
-
 let get_whole_lines ~str =
   let rec find i acc =
     try
