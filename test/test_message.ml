@@ -3,8 +3,6 @@ open OUnit
 module H = Irc_helpers
 module M = Irc_message
 
-let pp_strlist l = "[" ^ String.concat ";" l ^ "]"
-
 let test_extract_prefix =
   let test ~msg ~input ~expected_output () =
     let parsed = M.extract_prefix input in
