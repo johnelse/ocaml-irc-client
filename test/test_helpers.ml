@@ -17,11 +17,11 @@ let test_split =
   "test_split" >:::  [ "1" >:: test1; "2" >:: test2 ]
 
 let test_handle_input =
-  let test buffer_contents input (expected_output, expected_buffer) =
+  let test buffer_contents input (expected_lines, expected_buffer) =
     let buffer = Buffer.create 0 in
     Buffer.add_string buffer buffer_contents;
     assert_equal ~printer:pp_strlist
-      expected_output
+      expected_lines
       (H.handle_input ~buffer ~input);
     assert_equal
       expected_buffer
