@@ -17,23 +17,41 @@ let test_split =
   "test_split" >:::  [ "1" >:: test1; "2" >:: test2 ]
 
 let test_handle_input =
-  let test buffer_contents input expected_output =
+  let test buffer_contents input (expected_output, expected_buffer) =
     let buffer = Buffer.create 0 in
     Buffer.add_string buffer buffer_contents;
     assert_equal ~printer:pp_strlist
       expected_output
-      (H.handle_input ~buffer ~input)
+      (H.handle_input ~buffer ~input);
+    assert_equal
+      expected_buffer
+      (Buffer.contents buffer)
   in
   "test_handle_input" >:::
     (List.map
       (fun (name, buffer_contents, input, expected_output) ->
         (name >::(fun () -> test buffer_contents input expected_output)))
       [
-        ("empty", "", "", []);
-        ("no newline", "", "foo", []);
-        ("one newline", "", "foo\r\n", ["foo"]);
-        ("one newline plus extra", "foo", "bar\r\nbaz", ["foobar"]);
-        ("two newlines", "", "foo\r\nbaz\r\n", ["foo"; "baz"]);
+        (
+          "empty", "", "",
+          ([], "")
+        );
+        (
+          "no newline", "", "foo",
+          ([], "foo")
+        );
+        (
+          "one newline", "", "foo\r\n",
+          (["foo"], "")
+        );
+        (
+          "one newline plus extra", "foo", "bar\r\nbaz",
+          (["foobar"], "baz")
+        );
+        (
+          "two newlines", "", "foo\r\nbaz\r\n",
+          (["foo"; "baz"], "")
+        );
       ])
 
 let suite =
