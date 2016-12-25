@@ -33,13 +33,8 @@ Helper functions for buffering data as it is read from a socket.<br>
 Split a string <code class="code">str</code> at each occurrence of the character <code class="code">c</code><br>
 </div>
 
-<pre><span id="VALsplit1"><span class="keyword">val</span> split1</span> : <code class="type">str:string -> c:char -> (string * string) option</code></pre><div class="info ">
-<code class="code">split1 ~str ~c</code> returns <code class="code"><span class="constructor">Some</span> (a, b)</code> where <code class="code">a ^ c ^ b = str</code> if
-    it can, or <code class="code"><span class="constructor">None</span></code> otherwise<br>
-</div>
-
 <pre><span id="VALsplit1_exn"><span class="keyword">val</span> split1_exn</span> : <code class="type">str:string -> c:char -> string * string</code></pre><div class="info ">
-Same as <a href="Irc_helpers.html#VALsplit1"><code class="code"><span class="constructor">Irc_helpers</span>.split1</code></a> but unsafe<br>
+Same as <code class="code">split1</code> but unsafe<br>
 <b>Raises</b> <code>Not_found</code> if the separator isn't found<br>
 </div>
 
