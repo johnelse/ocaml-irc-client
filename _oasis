@@ -75,15 +75,15 @@ Executable example_tls
   Install: false
   BuildDepends: irc-client.tls
 
-Executable test_main
+Executable test_unit_main
   Build$: flag(tests)
   Path: test
-  MainIs: test_main.ml
+  MainIs: test_unit_main.ml
   Install: false
   BuildDepends: oUnit, irc-client
 
-Test test_main
-  Command: $test_main
+Test test_unit_main
+  Command: $test_unit_main
   WorkingDirectory: test
 
 AlphaFeatures: ocamlbuild_more_args
