@@ -1,4 +1,4 @@
-module Io = struct
+module Io_unix = struct
   type 'a t = 'a
   let (>>=) x f = f x
   let return x = x
@@ -37,4 +37,4 @@ module Io = struct
   let pick = None
 end
 
-include Irc_client.Make(Io)
+include Irc_client.Make(Io_unix)

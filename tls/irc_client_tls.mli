@@ -1,5 +1,5 @@
 
-module Io : sig
+module Io_tls : sig
   type 'a t = 'a Lwt.t
 
   type file_descr = {
@@ -19,4 +19,7 @@ module Io : sig
      and type config := config
 end
 
-include module type of Irc_client.Make(Io)
+include Irc_client.CLIENT
+  with type 'a Io.t = 'a Io_tls.t
+   and type Io.inet_addr = Io_tls.inet_addr
+   and type Io.config = Io_tls.config

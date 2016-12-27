@@ -1,4 +1,4 @@
-module Io = struct
+module Io_lwt = struct
   type 'a t = 'a Lwt.t
   let (>>=) = Lwt.bind
   let return = Lwt.return
@@ -42,4 +42,4 @@ module Io = struct
   let pick = Some Lwt.pick
 end
 
-include Irc_client.Make(Io)
+include Irc_client.Make(Io_lwt)
