@@ -41,7 +41,7 @@ Library irc_client_lwt
 Library irc_client_unix
   Build$: flag(unix)
   Path: unix
-  BuildDepends: irc-client
+  BuildDepends: irc-client, unix
   Findlibname: unix
   Findlibparent: irc_client
   Modules: Irc_client_unix
