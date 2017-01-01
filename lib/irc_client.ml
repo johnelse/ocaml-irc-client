@@ -157,7 +157,7 @@ module Make(Io: Irc_transport.IO) = struct
   type listen_keepalive_state = {
     mutable last_seen: float;
     mutable last_active_ping: float;
-    mutable finish: bool;
+    mutable finished: bool;
   }
 
   (* main loop for pinging server actively *)
@@ -168,7 +168,7 @@ module Make(Io: Irc_transport.IO) = struct
       let time_til_ping =
         state.last_active_ping +. float keepalive.timeout -. now
       in
-      if state.finish then (
+      if state.finished then (
         Io.return ()
       ) else (
         (* send "ping" if active mode and it's been long enough *)
@@ -195,10 +195,10 @@ module Make(Io: Irc_transport.IO) = struct
       next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
       | Timeout ->
-        state.finish <- true;
+        state.finished <- true;
         log "client timeout"
       | End ->
-        state.finish <- true;
+        state.finished <- true;
         log "connection closed"
       | Read line ->
         begin match M.parse line with
@@ -215,14 +215,14 @@ module Make(Io: Irc_transport.IO) = struct
           | result -> callback connection result
         end
         >>= fun () ->
-        if state.finish
+        if state.finished
         then Io.return ()
         else listen_rec state
     in
     let state = {
       last_seen = Sys.time();
       last_active_ping = Sys.time();
-      finish = false;
+      finished = false;
     } in
     (* connect, serve, etc. *)
     begin match Io.pick with
