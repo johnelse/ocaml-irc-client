@@ -16,6 +16,10 @@ Flag unix
   Description: build the Unix library
   Default: false
 
+Flag tls
+  Description: build the TLS library
+  Default: false
+
 Flag examples
   Description: build examples
   Default: false
@@ -42,6 +46,14 @@ Library irc_client_unix
   Findlibparent: irc_client
   Modules: Irc_client_unix
 
+Library irc_client_tls
+  Build$:       flag(lwt) && flag(tls)
+  Path:         tls
+  BuildDepends: irc-client, lwt, tls.lwt, tls
+  Findlibname:  tls
+  Findlibparent: irc_client
+  Modules:      Irc_client_tls
+
 Executable example1
   Build$: flag(lwt) && flag(examples)
   Path: examples
@@ -55,6 +67,13 @@ Executable example2
   MainIs: example2.ml
   Install: false
   BuildDepends: irc-client.lwt
+
+Executable example_tls
+  Build$: flag(lwt) && flag(tls) && flag(examples)
+  Path: examples
+  MainIs: example_tls.ml
+  Install: false
+  BuildDepends: irc-client.tls
 
 Executable test_main
   Build$: flag(tests)

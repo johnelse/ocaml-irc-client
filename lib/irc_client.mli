@@ -38,6 +38,7 @@ module Make : functor (Io: Irc_transport.IO) ->
 
     val connect :
       ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
+      ?config:Io.config ->
       addr:Io.inet_addr -> port:int -> nick:string -> unit ->
       connection_t Io.t
     (** Connect to an IRC server at address [addr]. The PASS command will be
