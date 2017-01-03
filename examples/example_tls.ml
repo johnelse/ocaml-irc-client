@@ -3,7 +3,7 @@ module C = Irc_client_tls
 module M = Irc_message
 
 let host = ref "irc.freenode.net"
-let port = ref 6667
+let port = ref 6697
 let nick = ref "bobobobot"
 let channel = ref "#demo_irc"
 let message = "Hello, world!  This is a test from ocaml-irc-client"
