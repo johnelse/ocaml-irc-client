@@ -8,8 +8,10 @@ module Io : sig
   }
 
   val default_config : Tls.Config.client
+  (** Default config. No authentication, only secure connection. *)
 
   val config : Tls.Config.client ref
+  (** Current configuration, used by {!connect} to set the TLS parameters. *)
 
   include Irc_transport.IO
     with type 'a t := 'a t
