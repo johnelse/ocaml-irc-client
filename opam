@@ -9,6 +9,7 @@ build: [
     "./configure"
     "--prefix" prefix
     "--%{lwt:enable}%-lwt"
+    "--%{tls:enable}%-tls"
     "--%{base-unix:enable}%-unix"
     "--enable-docs"
     "--enable-examples"
@@ -38,7 +39,10 @@ depends: [
   "result"
   "ounit" {test}
 ]
-depopts: ["lwt"]
+depopts: [
+  "lwt"
+  "tls"
+]
 available: [
   ocaml-version >= "4.00.1"
 ]
