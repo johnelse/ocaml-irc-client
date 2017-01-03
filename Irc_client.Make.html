@@ -78,7 +78,7 @@ Send the QUIT command.<br>
 Send the USER command.<br>
 </div>
 
-<pre><span id="VALconnect"><span class="keyword">val</span> connect</span> : <code class="type">?username:string -><br>       ?mode:int -><br>       ?realname:string -><br>       ?password:string -><br>       addr:Io.inet_addr -><br>       port:int -> nick:string -> unit -> <a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> Io.t</code></pre><div class="info ">
+<pre><span id="VALconnect"><span class="keyword">val</span> connect</span> : <code class="type">?username:string -><br>       ?mode:int -><br>       ?realname:string -><br>       ?password:string -><br>       ?config:Io.config -><br>       addr:Io.inet_addr -><br>       port:int -> nick:string -> unit -> <a href="Irc_client.Make.html#TYPEconnection_t">connection_t</a> Io.t</code></pre><div class="info ">
 Connect to an IRC server at address <code class="code">addr</code>. The PASS command will be
         sent if <code class="code">password</code> is not None.<br>
 </div>

@@ -28,12 +28,24 @@
 <pre><span id="VAL(>>=)"><span class="keyword">val</span> (&gt;&gt;=)</span> : <code class="type">'a <a href="Irc_transport.IO.html#TYPEt">t</a> -><br>       ('a -> 'b <a href="Irc_transport.IO.html#TYPEt">t</a>) -> 'b <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
 <pre><span id="VALreturn"><span class="keyword">val</span> return</span> : <code class="type">'a -> 'a <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
 <pre><span id="TYPEfile_descr"><span class="keyword">type</span> <code class="type"></code>file_descr</span> </pre>
+<div class="info ">
+A connection to the remote IRC server<br>
+</div>
 
 
 <pre><span id="TYPEinet_addr"><span class="keyword">type</span> <code class="type"></code>inet_addr</span> </pre>
+<div class="info ">
+Remote addresses<br>
+</div>
 
 
-<pre><span id="VALopen_socket"><span class="keyword">val</span> open_socket</span> : <code class="type"><a href="Irc_transport.IO.html#TYPEinet_addr">inet_addr</a> -><br>       int -> <a href="Irc_transport.IO.html#TYPEfile_descr">file_descr</a> <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
+<pre><span id="TYPEconfig"><span class="keyword">type</span> <code class="type"></code>config</span> </pre>
+<div class="info ">
+Additional configuration, on a per-connection basis.<br>
+</div>
+
+
+<pre><span id="VALopen_socket"><span class="keyword">val</span> open_socket</span> : <code class="type">?config:<a href="Irc_transport.IO.html#TYPEconfig">config</a> -><br>       <a href="Irc_transport.IO.html#TYPEinet_addr">inet_addr</a> -><br>       int -> <a href="Irc_transport.IO.html#TYPEfile_descr">file_descr</a> <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
 <pre><span id="VALclose_socket"><span class="keyword">val</span> close_socket</span> : <code class="type"><a href="Irc_transport.IO.html#TYPEfile_descr">file_descr</a> -> unit <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
 <pre><span id="VALread"><span class="keyword">val</span> read</span> : <code class="type"><a href="Irc_transport.IO.html#TYPEfile_descr">file_descr</a> -><br>       Bytes.t -> int -> int -> int <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
 <pre><span id="VALwrite"><span class="keyword">val</span> write</span> : <code class="type"><a href="Irc_transport.IO.html#TYPEfile_descr">file_descr</a> -><br>       Bytes.t -> int -> int -> int <a href="Irc_transport.IO.html#TYPEt">t</a></code></pre>
