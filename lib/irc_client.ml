@@ -120,8 +120,8 @@ module Make(Io: Irc_transport.IO) = struct
 
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ~addr ~port ~nick () =
-    Io.open_socket addr port >>= (fun sock ->
+      ?password ?config ~addr ~port ~nick () =
+    Io.open_socket ?config addr port >>= (fun sock ->
       let connection = mk_connection_ sock in
       begin
         match password with

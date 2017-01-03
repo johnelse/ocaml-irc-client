@@ -12,13 +12,13 @@ module Io = struct
 
   type inet_addr = string
 
+  type config = Tls.Config.client
+
   let default_config : Tls.Config.client =
     Tls.Config.client ~authenticator:X509.Authenticator.null ()
 
-  let config : Tls.Config.client ref = ref default_config
-
-  let open_socket addr port : file_descr t =
-    Tls_lwt.connect_ext !config (addr,port) >|= fun (ic,oc) ->
+  let open_socket ?(config=default_config) addr port : file_descr t =
+    Tls_lwt.connect_ext config (addr,port) >|= fun (ic,oc) ->
     {ic; oc}
 
   let close_socket {ic;oc} =

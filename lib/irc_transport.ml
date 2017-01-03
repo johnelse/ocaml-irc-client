@@ -7,7 +7,9 @@ module type IO = sig
 
   type inet_addr
 
-  val open_socket : inet_addr -> int -> file_descr t
+  type config
+
+  val open_socket : ?config:config -> inet_addr -> int -> file_descr t
   val close_socket : file_descr -> unit t
 
   val read : file_descr -> Bytes.t -> int -> int -> int t

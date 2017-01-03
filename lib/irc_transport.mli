@@ -7,10 +7,15 @@ module type IO = sig
   val return : 'a -> 'a t
 
   type file_descr
+  (** A connection to the remote IRC server *)
 
   type inet_addr
+  (** Remote addresses *)
 
-  val open_socket : inet_addr -> int -> file_descr t
+  type config
+  (** Additional configuration, on a per-connection basis. *)
+
+  val open_socket : ?config:config -> inet_addr -> int -> file_descr t
   val close_socket : file_descr -> unit t
 
   val read : file_descr -> Bytes.t -> int -> int -> int t

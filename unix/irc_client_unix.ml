@@ -4,10 +4,10 @@ module Io = struct
   let return x = x
 
   type file_descr = Unix.file_descr
-
   type inet_addr = Unix.inet_addr
+  type config = unit
 
-  let open_socket addr port =
+  let open_socket ?(config=()) addr port =
     let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
     let sockaddr = Unix.ADDR_INET (addr, port) in
     Unix.connect sock sockaddr;
