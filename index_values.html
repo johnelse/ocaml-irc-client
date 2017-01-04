@@ -24,19 +24,19 @@
 <tr><td align="left"><br>C</td></tr>
 <tr><td><a href="Irc_transport.IO.html#VALclose_socket">close_socket</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
 <td></td></tr>
-<tr><td><a href="Irc_client.Make.html#VALconnect">connect</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALconnect">connect</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Connect to an IRC server at address <code class="code">addr</code>.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALconnect_by_name">connect_by_name</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALconnect_by_name">connect_by_name</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Try to resolve the <code class="code">server</code> name using DNS, otherwise behaves like
-        <code class="code">connect</code>.
+      <a href="Irc_client.CLIENT.html#VALconnect"><code class="code"><span class="constructor">Irc_client</span>.<span class="constructor">CLIENT</span>.connect</code></a>.
 </div>
 </td></tr>
 <tr><td align="left"><br>D</td></tr>
-<tr><td><a href="Irc_client.Make.html#VALdefault_keepalive">default_keepalive</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALdefault_keepalive">default_keepalive</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Default value for keepalive: active mode with auto-reconnect
 </div>
@@ -83,10 +83,10 @@ Given a <code class="code">buffer</code> and a string <code class="code">input</
 <tr><td align="left"><br>L</td></tr>
 <tr><td><a href="Irc_message.html#VALlist">list</a> [<a href="Irc_message.html">Irc_message</a>]</td>
 <td></td></tr>
-<tr><td><a href="Irc_client.Make.html#VALlisten">listen</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALlisten">listen</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 <code class="code">listen connection callback</code> listens for incoming messages on
-        <code class="code">connection</code>.
+      <code class="code">connection</code>.
 </div>
 </td></tr>
 <tr><td align="left"><br>M</td></tr>
@@ -149,62 +149,62 @@ OPTIONAL
       or <code class="code"><span class="constructor">None</span></code> if nothing was read before <code class="code">timeout</code> seconds.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALreconnect_loop">reconnect_loop</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALreconnect_loop">reconnect_loop</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
-A combination of <code class="code">connect</code> and <code class="code">listen</code> that, every time
-        the connection is terminated, tries to start a new one
-        after <code class="code">after</code> seconds.
+A combination of <a href="Irc_client.CLIENT.html#VALconnect"><code class="code"><span class="constructor">Irc_client</span>.<span class="constructor">CLIENT</span>.connect</code></a> and <a href="Irc_client.CLIENT.html#VALlisten"><code class="code"><span class="constructor">Irc_client</span>.<span class="constructor">CLIENT</span>.listen</code></a> that, every time
+      the connection is terminated, tries to start a new one
+      after <code class="code">after</code> seconds.
 </div>
 </td></tr>
 <tr><td><a href="Irc_transport.IO.html#VALreturn">return</a> [<a href="Irc_transport.IO.html">Irc_transport.IO</a>]</td>
 <td></td></tr>
 <tr><td align="left"><br>S</td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend">send</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend">send</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the given message
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_join">send_join</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_join">send_join</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the JOIN command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_nick">send_nick</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_nick">send_nick</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the NICK command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_notice">send_notice</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_notice">send_notice</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the NOTICE command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_pass">send_pass</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_pass">send_pass</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the PASS command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_pong">send_pong</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_pong">send_pong</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the PONG command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_privmsg">send_privmsg</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_privmsg">send_privmsg</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the PRIVMSG command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_quit">send_quit</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_quit">send_quit</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the QUIT command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALsend_user">send_user</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALsend_user">send_user</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Send the USER command.
 </div>
 </td></tr>
-<tr><td><a href="Irc_client.Make.html#VALset_log">set_log</a> [<a href="Irc_client.Make.html">Irc_client.Make</a>]</td>
+<tr><td><a href="Irc_client.CLIENT.html#VALset_log">set_log</a> [<a href="Irc_client.CLIENT.html">Irc_client.CLIENT</a>]</td>
 <td><div class="info">
 Set logging function
 </div>

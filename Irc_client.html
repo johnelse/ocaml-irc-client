@@ -28,4 +28,7 @@ Generic IRC client library, functorised over the
 </div>
 <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Irc_client.Make.html">Make</a> <code class="code">(</code><code class="code"><span class="constructor">Io</span></code><code class="code"> : </code><code class="type"><a href="Irc_transport.IO.html">Irc_transport.IO</a></code><code class="code">) </code>: <code class="code"><span class="keyword">sig</span></code> <a href="Irc_client.Make.html">..</a> <code class="code"><span class="keyword">end</span></code></pre></body></html>
+<pre><span class="keyword">module type</span> <a href="Irc_client.CLIENT.html">CLIENT</a> = <code class="code"><span class="keyword">sig</span></code> <a href="Irc_client.CLIENT.html">..</a> <code class="code"><span class="keyword">end</span></code></pre>
+<pre><span class="keyword">module</span> <a href="Irc_client.Make.html">Make</a> <code class="code">(</code><code class="code"><span class="constructor">Io</span></code><code class="code"> : </code><code class="type"><a href="Irc_transport.IO.html">Irc_transport.IO</a></code><code class="code">) </code>: <code class="type"><a href="Irc_client.CLIENT.html">CLIENT</a></code><code class="type">  with type 'a Io.t = 'a Io.t
+          and type Io.inet_addr = Io.inet_addr
+          and type Io.config = Io.config</code></pre></body></html>
