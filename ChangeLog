@@ -1,3 +1,12 @@
+0.4.0 (04-Jan-2017):
+ * Add experimental TLS support
+ * Add active and passive keepalive support for Irc_client_lwt
+ * Add passive keepalive support for Irc_client_unix
+ * Add generic CLIENT module type to interface
+ * Backwards-incompatible changes:
+ Use the result type instead of a polymorphic variant for Irc_message.or_error
+ Add unit argument to the listen function to handle new optional argument
+
 0.3.2 (19-Sep-2016):
  * Answer pings while establishing connection
 
