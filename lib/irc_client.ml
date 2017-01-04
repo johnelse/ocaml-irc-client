@@ -47,6 +47,7 @@ module type CLIENT = sig
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
+    ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like
@@ -240,12 +241,12 @@ module Make(Io: Irc_transport.IO) = struct
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ~server ~port ~nick () =
+      ?password ?config ~server ~port ~nick () =
     Io.gethostbyname server
     >>= (function
       | [] -> Io.return None
       | addr :: _ ->
-        connect ~addr ~port ~username ~mode ~realname ~nick ?password ()
+        connect ~addr ~port ~username ~mode ~realname ~nick ?password ?config ()
         >>= fun connection -> Io.return (Some connection))
 
   (** Information on keeping the connection alive *)
