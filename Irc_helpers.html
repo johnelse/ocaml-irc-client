@@ -30,12 +30,12 @@ Helper functions for buffering data as it is read from a socket.<br>
 <hr width="100%">
 
 <pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">str:string -> c:char -> string list</code></pre><div class="info ">
-Split a string <code class="code">str</code> at each occurrence of the character <code class="code">c</code><br>
+Split a string <code class="code">str</code> at each occurrence of the character <code class="code">c</code>.<br>
 </div>
 
 <pre><span id="VALsplit1_exn"><span class="keyword">val</span> split1_exn</span> : <code class="type">str:string -> c:char -> string * string</code></pre><div class="info ">
-Same as <code class="code">split1</code> but unsafe<br>
-<b>Raises</b> <code>Not_found</code> if the separator isn't found<br>
+Split a string <code class="code">str</code> at the first occurrence of the character <code class="code">c</code>.<br>
+<b>Raises</b> <code>Not_found</code> if the separator isn't found.<br>
 </div>
 
 <pre><span id="VALhandle_input"><span class="keyword">val</span> handle_input</span> : <code class="type">buffer:Buffer.t -> input:string -> string list</code></pre><div class="info ">
