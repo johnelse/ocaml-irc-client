@@ -1,10 +1,10 @@
-open OUnit
+open OUnit2
 
 module H = Irc_helpers
 module M = Irc_message
 
 let test_extract_prefix =
-  let test ~msg ~input ~expected_output () =
+  let test ~msg ~input ~expected_output _ =
     let parsed = M.extract_prefix input in
     assert_equal ~msg parsed expected_output
   in
@@ -21,7 +21,7 @@ let test_extract_prefix =
     ]
 
 let test_extract_trail =
-  let test ~msg ~input ~expected_output () =
+  let test ~msg ~input ~expected_output _ =
     let parsed = M.extract_trail input in
     assert_equal ~msg parsed expected_output
   in
@@ -42,7 +42,7 @@ let test_extract_trail =
     ]
 
 let test_full_parser =
-  let test ~msg ~input ~expected_output () =
+  let test ~msg ~input ~expected_output _ =
     let parsed = M.parse input in
     assert_equal ~msg parsed expected_output
   in

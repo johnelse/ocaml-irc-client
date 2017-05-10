@@ -1,15 +1,15 @@
-open OUnit
+open OUnit2
 
 module H = Irc_helpers
 
 let pp_strlist l = "[" ^ String.concat ";" l ^ "]"
 
 let test_split =
-  let test1 () =
+  let test1 _ =
     assert_equal ~printer:pp_strlist
       ["ab"; "c"; "d"; "ef"]
       (H.split ~str:"ab c d ef" ~c:' ')
-  and test2 () =
+  and test2 _ =
     assert_equal ~printer:pp_strlist
       [""; "a"; ""; "b"; "hello"; "world"; ""]
       (H.split ~str:" a  b hello world " ~c:' ')
@@ -30,7 +30,7 @@ let test_handle_input =
   "test_handle_input" >:::
     (List.map
       (fun (name, buffer_contents, input, expected_output) ->
-        (name >::(fun () -> test buffer_contents input expected_output)))
+        (name >::(fun _ -> test buffer_contents input expected_output)))
       [
         (
           "empty", "", "",
