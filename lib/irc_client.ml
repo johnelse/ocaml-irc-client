@@ -273,7 +273,8 @@ module Make(Io: Irc_transport.IO) = struct
       assert (keepalive.mode = `Active);
       let now = Io.time () in
       let time_til_ping =
-        state.last_active_ping +. float keepalive.timeout -. now
+        (max state.last_active_ping state.last_seen)
+        +. float keepalive.timeout -. now
       in
       if state.finished then (
         Io.return ()
