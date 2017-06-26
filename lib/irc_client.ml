@@ -298,7 +298,7 @@ module Make(Io: Irc_transport.IO) = struct
     (* main loop *)
     let rec listen_rec state =
       let now = Io.time() in
-      let timeout = state.last_seen +. float keepalive.timeout -. Io.time () in
+      let timeout = state.last_seen +. float keepalive.timeout -. now in
       next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
       | Timeout ->
