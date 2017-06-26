@@ -288,9 +288,9 @@ module Make(Io: Irc_transport.IO) = struct
         )
           >>= fun () ->
           (* sleep until the due date, then check again *)
-          Io.sleep (int_of_float time_til_ping + 1) >>= fun () ->
-          loop ()
+          Io.sleep (int_of_float time_til_ping + 1)
       )
+      >>= fun () -> loop ()
     in
     loop ()
 
