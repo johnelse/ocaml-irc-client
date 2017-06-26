@@ -35,6 +35,10 @@ module type IO = sig
   val sleep : int -> unit t
   (* [sleep t] sleeps for [t] seconds, then returns. *)
 
+  val time : unit -> float
+  (** Current wall time (used for timeouts). Typically, {!Unix.time}.
+      @since NEXT_RELEASE *)
+
   val pick : ('a t list -> 'a t) option
   (** OPTIONAL
       [pick l] returns the first  thread of [l] that terminates (and might

@@ -119,7 +119,8 @@ module Make(Io: Irc_transport.IO) = struct
   let log_ : (string -> unit Io.t) ref = ref (fun _ -> Io.return ())
   let set_log f = log_ := f
 
-  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Sys.time()) s)
+  let start_time = Io.time()
+  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Io.time () -. start_time) s)
   let logf s = Printf.ksprintf log s
 
   open Io
@@ -270,7 +271,7 @@ module Make(Io: Irc_transport.IO) = struct
   let active_ping_thread keepalive state ~connection =
     let rec loop () =
       assert (keepalive.mode = `Active);
-      let now = Sys.time() in
+      let now = Io.time () in
       let time_til_ping =
         state.last_active_ping +. float keepalive.timeout -. now
       in
@@ -296,8 +297,8 @@ module Make(Io: Irc_transport.IO) = struct
   let listen ?(keepalive=default_keepalive) ~connection ~callback () =
     (* main loop *)
     let rec listen_rec state =
-      let now = Sys.time() in
-      let timeout = state.last_seen +. float keepalive.timeout -. Sys.time () in
+      let now = Io.time() in
+      let timeout = state.last_seen +. float keepalive.timeout -. now in
       next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
       | Timeout ->
@@ -326,8 +327,8 @@ module Make(Io: Irc_transport.IO) = struct
         else listen_rec state
     in
     let state = {
-      last_seen = Sys.time();
-      last_active_ping = Sys.time();
+      last_seen = Io.time();
+      last_active_ping = Io.time();
       finished = false;
     } in
     (* connect, serve, etc. *)
