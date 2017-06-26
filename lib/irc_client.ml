@@ -309,16 +309,16 @@ module Make(Io: Irc_transport.IO) = struct
         state.finished <- true;
         log "connection closed"
       | Read line ->
+        (* update "last_seen" field *)
+        let now = Io.time() in
+        state.last_seen <- max now state.last_seen;
         begin match M.parse line with
           | Result.Ok {M.command = M.PING message; _} ->
-            (* update "last_seen" field *)
-            state.last_seen <- max now state.last_seen;
             (* Handle pings without calling the callback. *)
             log "reply pong to server" >>= fun () ->
             send_pong ~connection ~message
           | Result.Ok {M.command = M.PONG _; _} ->
-            (* active response from server, update "last_seen" field *)
-            state.last_seen <- max now state.last_seen;
+            (* active response from server *)
             Io.return ()
           | result -> callback connection result
         end
