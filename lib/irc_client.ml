@@ -119,7 +119,8 @@ module Make(Io: Irc_transport.IO) = struct
   let log_ : (string -> unit Io.t) ref = ref (fun _ -> Io.return ())
   let set_log f = log_ := f
 
-  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Io.time ()) s)
+  let start_time = Io.time()
+  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Io.time () -. start_time) s)
   let logf s = Printf.ksprintf log s
 
   open Io
