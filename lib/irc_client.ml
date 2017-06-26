@@ -274,7 +274,7 @@ module Make(Io: Irc_transport.IO) = struct
       let now = Io.time () in
       let time_til_ping =
         (max state.last_active_ping state.last_seen)
-        +. float keepalive.timeout -. now
+        +. (float keepalive.timeout /. 2.) -. now
       in
       if state.finished then (
         Io.return ()
