@@ -20,6 +20,7 @@ module type IO = sig
   val gethostbyname : string -> inet_addr list t
 
   val iter : ('a -> unit t) -> 'a list -> unit t
+  val catch : (unit -> 'a t) -> (exn -> 'a t) -> 'a t
 
   val sleep : int -> unit t
   val time : unit -> float

@@ -32,6 +32,10 @@ module type IO = sig
 
   val iter : ('a -> unit t) -> 'a list -> unit t
 
+  val catch : (unit -> 'a t) -> (exn -> 'a t) -> 'a t
+  (** Catch asynchronous exception
+      @since NEXT_RELEASE *)
+
   val sleep : int -> unit t
   (* [sleep t] sleeps for [t] seconds, then returns. *)
 

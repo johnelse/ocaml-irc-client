@@ -33,6 +33,7 @@ module Io_unix = struct
 
   let iter = List.iter
   let sleep = Unix.sleep
+  let catch f g = try f () with e -> g e
   let time = Unix.time
 
   let pick = None
