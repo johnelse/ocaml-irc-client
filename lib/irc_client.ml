@@ -283,7 +283,10 @@ module Make(Io: Irc_transport.IO) = struct
         if time_til_ping < 0. then (
           state.last_active_ping <- now;
           log "send ping to server..." >>= fun () ->
-          send_ping ~connection ~message:"ping"
+          (* try to send a ping, but ignore errors *)
+          Io.catch
+            (fun () -> send_ping ~connection ~message:"ping")
+            (fun _ -> Io.return ())
         ) else (
           Io.return ()
         )
@@ -345,16 +348,21 @@ module Make(Io: Irc_transport.IO) = struct
 
   let reconnect_loop ?keepalive ~after ~connect ~f ~callback () =
     let rec aux () =
-      connect () >>= function
-      | None -> log "could not connect" >>= aux
-      | Some connection ->
-        let t = listen ?keepalive ~connection ~callback () in
-        f connection >>= fun () ->
-        t >>= fun () ->
-        log "connection terminated." >>= fun () ->
-        Io.sleep after >>= fun () ->
-        log "try to reconnect..." >>= fun () ->
-        aux ()
+      Io.catch
+        (fun () ->
+           connect () >>= function
+           | None -> log "could not connect"
+           | Some connection ->
+             let t = listen ?keepalive ~connection ~callback () in
+             f connection >>= fun () ->
+             t >>= fun () ->
+             log "connection terminated.")
+        (fun e ->
+           logf "reconnect_loop: exception %s" (Printexc.to_string e))
+      >>= fun () ->
+      (* wait and reconnect *)
+      Io.sleep after >>= fun () ->
+      log "try to reconnect..." >>= aux
     in
     aux ()
 end

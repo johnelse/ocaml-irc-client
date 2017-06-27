@@ -41,6 +41,7 @@ module Io_tls = struct
 
   let iter = Lwt_list.iter_s
   let sleep d = Lwt_unix.sleep (float d)
+  let catch = Lwt.catch
   let time = Unix.time
 
   let pick = Some Lwt.pick
