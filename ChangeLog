@@ -1,3 +1,8 @@
+0.5.0 (01-Jul-2017):
+ * Use Unix.time for timeouts
+ * Update server last seen time when any communication is received
+ * Catch exceptions raised when sending pings
+
 0.4.0 (04-Jan-2017):
  * Add experimental TLS support
  * Add active and passive keepalive support for Irc_client_lwt
