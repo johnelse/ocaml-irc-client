@@ -209,21 +209,27 @@ module Make(Io: Irc_transport.IO) = struct
 
   let welcome_timeout = 30
 
-  let rec wait_for_welcome ~timeout ~connection =
-    next_line_ ~timeout ~connection
-    >>= function
-    | Timeout
-    | End -> return ()
-    | Read line ->
-      match M.parse line with
-        | Result.Ok {M.command = M.Other ("001", _); _} ->
-          (* we received "RPL_WELCOME", i.e. 001 *)
-          return ()
-        | Result.Ok {M.command = M.PING message; _} ->
-          (* server may ask for ping at any time *)
-          send_pong ~connection ~message >>= fun () ->
-          wait_for_welcome ~timeout ~connection
-        | _ -> wait_for_welcome ~timeout:welcome_timeout ~connection
+  let rec wait_for_welcome ~start ~connection =
+    let now = Io.time() in
+    let timeout = start +. float welcome_timeout -. now in
+    if timeout < 0.5 then return ()
+    else (
+      (* wait a bit more *)
+      next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
+      >>= function
+      | Timeout
+      | End -> return ()
+      | Read line ->
+        match M.parse line with
+          | Result.Ok {M.command = M.Other ("001", _); _} ->
+            (* we received "RPL_WELCOME", i.e. 001 *)
+            return ()
+          | Result.Ok {M.command = M.PING message; _} ->
+            (* server may ask for ping at any time *)
+            send_pong ~connection ~message >>= fun () ->
+            wait_for_welcome ~start ~connection
+          | _ -> wait_for_welcome ~start ~connection
+    )
 
   let connect
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
@@ -237,7 +243,7 @@ module Make(Io: Irc_transport.IO) = struct
       end
       >>= fun () -> send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
-      >>= fun () -> wait_for_welcome ~timeout:welcome_timeout ~connection
+      >>= fun () -> wait_for_welcome ~start:(Io.time()) ~connection
       >>= fun () -> return connection)
 
   let connect_by_name
