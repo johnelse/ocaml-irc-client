@@ -41,3 +41,12 @@ module Io_unix = struct
 end
 
 include Irc_client.Make(Io_unix)
+
+(* unix only allows passive mode *)
+let default_keepalive = {mode=`Passive; timeout=300}
+
+let listen ?(keepalive=default_keepalive) ~connection ~callback () =
+  listen ~keepalive ~connection ~callback ()
+
+let reconnect_loop ?(keepalive=default_keepalive) ~after ~connect ~f ~callback () =
+  reconnect_loop ~keepalive ~after ~connect ~f ~callback ()
