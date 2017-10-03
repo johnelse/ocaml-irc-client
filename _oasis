@@ -68,6 +68,14 @@ Executable example2
   Install:              false
   BuildDepends:         irc-client.lwt
 
+Executable example2_unix
+  Build$:               flag(unix) && flag(examples)
+  Path:                 examples
+  MainIs:               example2_unix.ml
+  Install:              false
+  BuildDepends:         irc-client.unix
+
+
 Executable example_tls
   Build$:               flag(lwt) && flag(tls) && flag(examples)
   Path:                 examples

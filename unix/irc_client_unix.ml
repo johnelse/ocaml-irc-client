@@ -11,6 +11,7 @@ module Io_unix = struct
     let sock = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
     let sockaddr = Unix.ADDR_INET (addr, port) in
     Unix.connect sock sockaddr;
+    Unix.set_nonblock sock;
     sock
 
   let close_socket = Unix.close
@@ -40,3 +41,12 @@ module Io_unix = struct
 end
 
 include Irc_client.Make(Io_unix)
+
+(* unix only allows passive mode *)
+let default_keepalive = {mode=`Passive; timeout=300}
+
+let listen ?(keepalive=default_keepalive) ~connection ~callback () =
+  listen ~keepalive ~connection ~callback ()
+
+let reconnect_loop ?(keepalive=default_keepalive) ~after ~connect ~f ~callback () =
+  reconnect_loop ~keepalive ~after ~connect ~f ~callback ()
