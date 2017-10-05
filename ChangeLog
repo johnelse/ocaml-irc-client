@@ -1,3 +1,7 @@
+0.5.1 (05-Oct-2017):
+ * Default to passive keepalive in irc-client.unix
+ * Stop waiting indefinitely for welcome message on connection
+
 0.5.0 (01-Jul-2017):
  * Use Unix.time for timeouts
  * Update server last seen time when any communication is received
