@@ -21,7 +21,7 @@ type command =
   | PRIVMSG of string * string (** target * message *)
   | NOTICE of string * string (** target * message *)
   | PING of string
-  | PONG of string
+  | PONG of string * string
   | Other of string * string list  (** other cases *)
 
 type t = {
@@ -48,7 +48,7 @@ val kick : chans:string list -> nick:string -> comment:string option -> t
 val privmsg : target:string -> string -> t
 val notice : target:string -> string -> t
 val ping : string -> t
-val pong : string -> t
+val pong : middle:string -> trailer:string -> t
 
 val other : cmd:string -> params:string list -> t
 
