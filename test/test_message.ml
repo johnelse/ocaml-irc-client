@@ -53,7 +53,7 @@ let test_full_parser =
           ~input:"PING :abc.def"
           ~expected_output:(Result.Ok {
             M.prefix = None;
-            command = M.PING "abc.def";
+            command = M.PING ("abc.def", "");
           });
       "test_parse_privmsg" >::
         test ~msg:"Parsing a PRIVMSG"

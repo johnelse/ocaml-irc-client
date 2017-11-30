@@ -18,7 +18,7 @@ type command =
   | KICK of string list * string * string (** channels * nick * comment *)
   | PRIVMSG of string * string (** target * message *)
   | NOTICE of string * string (** target * message *)
-  | PING of string
+  | PING of string * string
   | PONG of string * string
   | Other of string * (string list) (** command name * parameters *)
 
@@ -48,8 +48,8 @@ let invite ~nick ~chan = make_ (INVITE (nick, chan))
 let kick ~chans ~nick ~comment = make_ (KICK (chans, nick, unwrap_ "" comment))
 let privmsg ~target msg = make_ (PRIVMSG (target, msg))
 let notice ~target msg = make_ (NOTICE (target, msg))
-let ping s = make_ (PING s)
-let pong ~middle ~trailer = make_ (PONG (middle, trailer))
+let ping ~message1 ~message2 = make_ (PONG (message1, message2))
+let pong ~message1 ~message2 = make_ (PONG (message1, message2))
 
 let other ~cmd ~params = make_other_ cmd params
 
@@ -162,7 +162,9 @@ let parse_exn msg =
       | "NOTICE" ->
         let target, msg = expect2 msg params in
         NOTICE (target, msg)
-      | "PING" -> PING (expect1 msg params)
+      | "PING" ->
+        let middle, trailer = expect1or2 msg params in
+        PING (middle, trailer)
       | "PONG" ->
         let middle, trailer = expect1or2 msg params in
         PONG (middle, trailer)
@@ -217,7 +219,7 @@ let write_cmd_buf buf t =
   | KICK (l,nick,c) -> pp "KICK %a %s %a" (write_list ',') l nick write_trail c
   | PRIVMSG (a,b) -> pp "PRIVMSG %s %a" a write_trail b
   | NOTICE (a,b) -> pp "NOTICE %s %a" a write_trail b
-  | PING a -> pp "PING %a" write_trail a
+  | PING (a,b) -> pp "PING %s %a" a write_trail b
   | PONG (a,b) -> pp "PONG %s %a" a write_trail b
   | Other (command_name, params) ->
     Printf.bprintf buf "%s %a" command_name (write_list ~trail:true ' ') params

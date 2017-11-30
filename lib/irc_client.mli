@@ -22,7 +22,8 @@ module type CLIENT = sig
   val send_pass : connection:connection_t -> password:string -> unit Io.t
   (** Send the PASS command. *)
 
-  val send_pong : connection:connection_t -> message:string -> unit Io.t
+  val send_pong : connection:connection_t ->
+    message1:string -> message2:string -> unit Io.t
   (** Send the PONG command. *)
 
   val send_privmsg : connection:connection_t ->

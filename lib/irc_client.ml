@@ -19,7 +19,8 @@ module type CLIENT = sig
   val send_pass : connection:connection_t -> password:string -> unit Io.t
   (** Send the PASS command. *)
 
-  val send_pong : connection:connection_t -> message:string -> unit Io.t
+  val send_pong : connection:connection_t ->
+    message1:string -> message2:string -> unit Io.t
   (** Send the PONG command. *)
 
   val send_privmsg : connection:connection_t ->
@@ -152,11 +153,11 @@ module Make(Io: Irc_transport.IO) = struct
   let send_pass ~connection ~password =
     send ~connection (M.pass password)
 
-  let send_ping ~connection ~message =
-    send ~connection (M.ping message)
+  let send_ping ~connection ~message1 ~message2 =
+    send ~connection (M.ping ~message1 ~message2)
 
-  let send_pong ~connection ~message =
-    send ~connection (M.pong ~middle:"ocaml-irc-client" ~trailer:message)
+  let send_pong ~connection ~message1 ~message2 =
+    send ~connection (M.pong ~message1 ~message2)
 
   let send_privmsg ~connection ~target ~message =
     send ~connection (M.privmsg ~target message)
@@ -228,9 +229,9 @@ module Make(Io: Irc_transport.IO) = struct
             | Result.Ok {M.command = M.Other ("001", _); _} ->
               (* we received "RPL_WELCOME", i.e. 001 *)
               return ()
-            | Result.Ok {M.command = M.PING message; _} ->
+            | Result.Ok {M.command = M.PING (message1, message2); _} ->
               (* server may ask for ping at any time *)
-              send_pong ~connection ~message >>= aux
+              send_pong ~connection ~message1 ~message2 >>= aux
             | _ -> aux()
           end
       )
@@ -298,7 +299,7 @@ module Make(Io: Irc_transport.IO) = struct
           log "send ping to server..." >>= fun () ->
           (* try to send a ping, but ignore errors *)
           Io.catch
-            (fun () -> send_ping ~connection ~message:"ping")
+            (fun () -> send_ping ~connection ~message1:"ping" ~message2:"")
             (fun _ -> Io.return ())
         ) else (
           Io.return ()
@@ -329,10 +330,10 @@ module Make(Io: Irc_transport.IO) = struct
         let now = Io.time() in
         state.last_seen <- max now state.last_seen;
         begin match M.parse line with
-          | Result.Ok {M.command = M.PING message; _} ->
+          | Result.Ok {M.command = M.PING (message1, message2); _} ->
             (* Handle pings without calling the callback. *)
             log "reply pong to server" >>= fun () ->
-            send_pong ~connection ~message
+            send_pong ~connection ~message1 ~message2
           | Result.Ok {M.command = M.PONG _; _} ->
             (* active response from server *)
             Io.return ()
