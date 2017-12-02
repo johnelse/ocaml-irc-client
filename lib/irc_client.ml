@@ -174,8 +174,9 @@ module Make(Io: Irc_transport.IO) = struct
 
   let mk_connection_ sock =
     let read_length = 1024 in
-    { sock = sock;
-      buffer=Buffer.create 128;
+    {
+      sock = sock;
+      buffer = Buffer.create 128;
       read_length;
       read_data = Bytes.make read_length ' ';
       lines = Queue.create ();
@@ -192,7 +193,7 @@ module Make(Io: Irc_transport.IO) = struct
     then return End
     else if Queue.length c.lines > 0
     then return (Read (Queue.pop c.lines))
-    else (
+    else begin
       (* Read some data into our string. *)
       Io.read_with_timeout ~timeout c.sock c.read_data 0 c.read_length
       >>= function
@@ -206,16 +207,16 @@ module Make(Io: Irc_transport.IO) = struct
         let lines = Irc_helpers.handle_input ~buffer:c.buffer ~input in
         List.iter (fun l -> Queue.push l c.lines) lines;
         next_line_ ~timeout ~connection:c
-    )
+    end
 
   let welcome_timeout = 30.
 
   let wait_for_welcome ~start ~connection =
-    let rec aux() =
-      let now = Io.time() in
+    let rec aux () =
+      let now = Io.time () in
       let timeout = start +. welcome_timeout -. now in
       if timeout < 0.5 then return ()
-      else (
+      else begin
         (* wait a bit more *)
         let timeout = int_of_float (ceil timeout) in
         assert (timeout > 0);
@@ -234,9 +235,9 @@ module Make(Io: Irc_transport.IO) = struct
               send_pong ~connection ~message1 ~message2 >>= aux
             | _ -> aux()
           end
-      )
+      end
     in
-    aux() >>= fun () ->
+    aux () >>= fun () ->
     log "finished waiting for welcome msg"
 
   let connect
@@ -251,7 +252,7 @@ module Make(Io: Irc_transport.IO) = struct
       end
       >>= fun () -> send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
-      >>= fun () -> wait_for_welcome ~start:(Io.time()) ~connection
+      >>= fun () -> wait_for_welcome ~start:(Io.time ()) ~connection
       >>= fun () -> return connection)
 
   let connect_by_name
@@ -271,8 +272,8 @@ module Make(Io: Irc_transport.IO) = struct
   }
 
   let default_keepalive: keepalive = {
-    mode=`Active;
-    timeout=60;
+    mode = `Active;
+    timeout = 60;
   }
 
   type listen_keepalive_state = {
@@ -290,9 +291,9 @@ module Make(Io: Irc_transport.IO) = struct
         (max state.last_active_ping state.last_seen)
         +. (float keepalive.timeout /. 2.) -. now
       in
-      if state.finished then (
-        Io.return ()
-      ) else (
+      if state.finished
+      then Io.return ()
+      else begin
         (* send "ping" if active mode and it's been long enough *)
         if time_til_ping < 0. then (
           state.last_active_ping <- now;
@@ -307,7 +308,7 @@ module Make(Io: Irc_transport.IO) = struct
           >>= fun () ->
           (* sleep until the due date, then check again *)
           Io.sleep (int_of_float time_til_ping + 1)
-      )
+      end
       >>= fun () -> loop ()
     in
     loop ()
@@ -315,7 +316,7 @@ module Make(Io: Irc_transport.IO) = struct
   let listen ?(keepalive=default_keepalive) ~connection ~callback () =
     (* main loop *)
     let rec listen_rec state =
-      let now = Io.time() in
+      let now = Io.time () in
       let timeout = state.last_seen +. float keepalive.timeout -. now in
       next_line_ ~timeout:(int_of_float (ceil timeout)) ~connection
       >>= function
@@ -352,10 +353,10 @@ module Make(Io: Irc_transport.IO) = struct
     (* connect, serve, etc. *)
     begin match Io.pick with
       | Some pick when keepalive.mode = `Active ->
-        pick
-          [ listen_rec state;
-            active_ping_thread keepalive state ~connection;
-          ]
+        pick [
+          listen_rec state;
+          active_ping_thread keepalive state ~connection;
+        ]
       | _ ->
         listen_rec state
     end
