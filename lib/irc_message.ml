@@ -48,7 +48,7 @@ let invite ~nick ~chan = make_ (INVITE (nick, chan))
 let kick ~chans ~nick ~comment = make_ (KICK (chans, nick, unwrap_ "" comment))
 let privmsg ~target msg = make_ (PRIVMSG (target, msg))
 let notice ~target msg = make_ (NOTICE (target, msg))
-let ping ~message1 ~message2 = make_ (PONG (message1, message2))
+let ping ~message1 ~message2 = make_ (PING (message1, message2))
 let pong ~message1 ~message2 = make_ (PONG (message1, message2))
 
 let other ~cmd ~params = make_other_ cmd params
