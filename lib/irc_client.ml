@@ -81,6 +81,7 @@ module type CLIENT = sig
 
   val reconnect_loop :
     ?keepalive:keepalive ->
+    ?reconnect:bool ->
     after:int ->
     connect:(unit -> connection_t option Io.t) ->
     f:(connection_t -> unit Io.t) ->
@@ -361,22 +362,25 @@ module Make(Io: Irc_transport.IO) = struct
         listen_rec state
     end
 
-  let reconnect_loop ?keepalive ~after ~connect ~f ~callback () =
+  let reconnect_loop ?keepalive ?(reconnect=true) ~after ~connect ~f ~callback () =
     let rec aux () =
       Io.catch
         (fun () ->
            connect () >>= function
-           | None -> log "could not connect"
+           | None -> log "could not connect" >>= fun () -> return true
            | Some connection ->
              f connection >>= fun () ->
              listen ?keepalive ~connection ~callback () >>= fun () ->
-             log "connection terminated.")
+             log "connection terminated." >>= fun () ->
+             return reconnect)
         (fun e ->
-           logf "reconnect_loop: exception %s" (Printexc.to_string e))
-      >>= fun () ->
+           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun _ ->
+           return true)
+      >>= fun loop ->
       (* wait and reconnect *)
       Io.sleep after >>= fun () ->
-      log "try to reconnect..." >>= aux
+      if loop then log "try to reconnect..." >>= aux
+      else return ()
     in
     aux ()
 end

@@ -48,5 +48,5 @@ let default_keepalive = {mode=`Passive; timeout=300}
 let listen ?(keepalive=default_keepalive) ~connection ~callback () =
   listen ~keepalive ~connection ~callback ()
 
-let reconnect_loop ?(keepalive=default_keepalive) ~after ~connect ~f ~callback () =
-  reconnect_loop ~keepalive ~after ~connect ~f ~callback ()
+let reconnect_loop ?(keepalive=default_keepalive) ?(reconnect=true) ~after ~connect ~f ~callback () =
+  reconnect_loop ~keepalive ~reconnect ~after ~connect ~f ~callback ()
