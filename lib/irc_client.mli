@@ -84,6 +84,7 @@ module type CLIENT = sig
 
   val reconnect_loop :
     ?keepalive:keepalive ->
+    ?reconnect:bool ->
     after:int ->
     connect:(unit -> connection_t option Io.t) ->
     f:(connection_t -> unit Io.t) ->
