@@ -8,6 +8,9 @@ doc:
 clean:
 	jbuilder clean
 
+test:
+	jbuilder runtest --force
+
 ARGS=
 
 example1:
@@ -22,4 +25,4 @@ example2_unix:
 example_tls:
 	jbuilder exec examples/$@.exe -- $(ARGS)
 
-.PHONY: example1 example2 example2_unix example_tls
+.PHONY: example1 example2 example2_unix example_tls test
