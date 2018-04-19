@@ -8,16 +8,18 @@ doc:
 clean:
 	jbuilder clean
 
+ARGS=
+
 example1:
-	./run_example.sh 1
+	jbuilder exec examples/$@.exe -- $(ARGS)
 
 example2:
-	./run_example.sh 2
+	jbuilder exec examples/$@.exe -- $(ARGS)
 
 example2_unix:
-	./run_example.sh 2_unix
+	jbuilder exec examples/$@.exe -- $(ARGS)
 
 example_tls:
-	./run_example.sh _tls
+	jbuilder exec examples/$@.exe -- $(ARGS)
 
 .PHONY: example1 example2 example2_unix example_tls
