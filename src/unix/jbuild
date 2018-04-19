@@ -1,0 +1,8 @@
+(library
+  ((name irc_client_unix)
+   (public_name irc-client.unix)
+   (optional)
+   (wrapped false)
+   (flags (:standard -safe-string))
+   (libraries (result bytes irc-client unix))
+  ))

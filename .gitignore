@@ -10,3 +10,5 @@ irc_client_api.docdir
 
 travis-coveralls.sh
 .coverage/
+*.merlin
+*.install
