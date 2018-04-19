@@ -1,0 +1,12 @@
+
+(executable
+  ((name test_unit_main)
+   (libraries (oUnit irc-client))
+   ))
+
+
+(alias
+ ((name    runtest)
+  (deps    (test_unit_main.exe))
+  (action  (run ${<}))))
+

@@ -1,41 +1,23 @@
-# OASIS_START
-# DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
-
-SETUP = ocaml setup.ml
-
-build: setup.data
-	$(SETUP) -build $(BUILDFLAGS)
-
-doc: setup.data build
-	$(SETUP) -doc $(DOCFLAGS)
-
-test: setup.data build
-	$(SETUP) -test $(TESTFLAGS)
 
 all:
-	$(SETUP) -all $(ALLFLAGS)
+	jbuilder build @install
 
-install: setup.data
-	$(SETUP) -install $(INSTALLFLAGS)
-
-uninstall: setup.data
-	$(SETUP) -uninstall $(UNINSTALLFLAGS)
-
-reinstall: setup.data
-	$(SETUP) -reinstall $(REINSTALLFLAGS)
+doc:
+	jbuilder build @doc
 
 clean:
-	$(SETUP) -clean $(CLEANFLAGS)
+	jbuilder clean
 
-distclean:
-	$(SETUP) -distclean $(DISTCLEANFLAGS)
+example1:
+	./run_example.sh 1
 
-setup.data:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
+example2:
+	./run_example.sh 2
 
-configure:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
+example2_unix:
+	./run_example.sh 2_unix
 
-.PHONY: build doc test all install uninstall reinstall clean distclean configure
+example_tls:
+	./run_example.sh _tls
 
-# OASIS_STOP
+.PHONY: example1 example2 example2_unix example_tls
