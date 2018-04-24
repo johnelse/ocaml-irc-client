@@ -2,11 +2,6 @@
 
 _build
 oUnit-anon.cache
-setup.data
-setup.log
-
-irc_client_api.docdir
-*.byte
 
 travis-coveralls.sh
 .coverage/
