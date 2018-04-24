@@ -15,10 +15,10 @@ build-test: [
 ]
 depends: [
   "jbuilder" {build}
-  "base-bytes"
-  "result"
-  "ounit" {test}
+  "base-unix"
+  "irc-client"
 ]
 available: [
   ocaml-version >= "4.00.1"
 ]
+
