@@ -11,6 +11,12 @@ clean:
 test:
 	jbuilder runtest --force
 
+install:
+	jbuilder install
+
+uninstall:
+	jbuilder uninstall
+
 ARGS=
 
 example1:
