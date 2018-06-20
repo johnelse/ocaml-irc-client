@@ -20,5 +20,5 @@ depends: [
   "ounit" {test}
 ]
 available: [
-  ocaml-version >= "4.00.1"
+  ocaml-version >= "4.02.0"
 ]
