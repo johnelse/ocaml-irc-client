@@ -183,7 +183,8 @@ let parse s =
 
 (* write [s] into [buf], possibly as a ':'-prefixed trail *)
 let write_trail buf s =
-  if String.contains s ' ' then Buffer.add_char buf ':';
+  if String.contains s ' ' || String.length s > 0 && s.[0] = ':'
+  then Buffer.add_char buf ':';
   Buffer.add_string buf s
 
 (* output list to buffer *)
