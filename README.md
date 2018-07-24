@@ -31,13 +31,6 @@ let username = nick
 let channel = "#demo_irc"
 let message = "Hello, world!  This is a test from ocaml-irc-client"
 
-let string_opt_to_string = function
-  | None -> "None"
-  | Some s -> Printf.sprintf "Some %s" s
-
-let string_list_to_string string_list =
-  Printf.sprintf "[%s]" (String.concat "; " string_list)
-
 let callback _connection result =
   let open Irc_message in
   match result with

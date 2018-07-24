@@ -7,9 +7,6 @@ let nick = ref "bobobobot"
 let channel = ref "#demo_irc"
 let message = "Hello, world!  This is a test from ocaml-irc-client"
 
-let string_list_to_string string_list =
-  Printf.sprintf "[%s]" (String.concat "; " string_list)
-
 let callback connection result =
   match result with
   | Result.Ok ({M.command=M.Other _ ; _}as msg) ->
