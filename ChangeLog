@@ -1,3 +1,7 @@
+0.6.1 (01-Aug-2018):
+ * Correctly send messages starting with a colon
+ * Remove some unused code
+
 0.6.0 (20-Jun-2018):
  * Convert to jbuilder
  * Split into multiple opam packages
