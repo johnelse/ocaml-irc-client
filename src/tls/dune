@@ -1,0 +1,5 @@
+(library
+  (name irc_client_tls)
+  (public_name irc-client-tls)
+  (wrapped false)
+  (libraries result bytes irc-client lwt lwt.unix tls tls.lwt))

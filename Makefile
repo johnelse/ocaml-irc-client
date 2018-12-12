@@ -1,34 +1,33 @@
-
 all:
-	jbuilder build @install
+	dune build @install --profile release
 
 doc:
-	jbuilder build @doc
+	dune build @doc
 
 clean:
-	jbuilder clean
+	dune clean
 
 test:
-	jbuilder runtest --force
+	dune runtest --force
 
 install:
-	jbuilder install
+	dune install
 
 uninstall:
-	jbuilder uninstall
+	dune uninstall
 
 ARGS=
 
 example1:
-	jbuilder exec examples/$@.exe -- $(ARGS)
+	dune exec examples/$@.exe --profile release -- $(ARGS)
 
 example2:
-	jbuilder exec examples/$@.exe -- $(ARGS)
+	dune exec examples/$@.exe --profile release -- $(ARGS)
 
 example2_unix:
-	jbuilder exec examples/$@.exe -- $(ARGS)
+	dune exec examples/$@.exe --profile release -- $(ARGS)
 
 example_tls:
-	jbuilder exec examples/$@.exe -- $(ARGS)
+	dune exec examples/$@.exe --profile release -- $(ARGS)
 
 .PHONY: example1 example2 example2_unix example_tls test

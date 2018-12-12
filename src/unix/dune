@@ -1,0 +1,5 @@
+(library
+  (name irc_client_unix)
+  (public_name irc-client-unix)
+  (wrapped false)
+  (libraries result bytes irc-client unix))
