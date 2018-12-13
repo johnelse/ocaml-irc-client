@@ -1,9 +1,0 @@
-(library
-  ((name irc_client_lwt)
-   (public_name irc-client-lwt)
-   (wrapped false)
-   (flags (:standard -safe-string ))
-   (libraries (result bytes irc-client lwt lwt.unix))
-  ))
-
-

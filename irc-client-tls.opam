@@ -5,16 +5,16 @@ bug-reports: "https://github.com/johnelse/ocaml-irc-client/issues"
 dev-repo: "git://github.com/johnelse/ocaml-irc-client"
 maintainer: "john.else@gmail.com"
 build: [
-  ["jbuilder" "build" "@install" "-p" name]
+  ["dune" "build" "@install" "-p" name]
 ]
 build-doc: [
-  ["jbuilder" "build" "@doc" "-p" name]
+  ["dune" "build" "@doc" "-p" name]
 ]
 build-test: [
-  ["jbuilder" "runtest" "-p" name]
+  ["dune" "runtest" "-p" name]
 ]
 depends: [
-  "jbuilder" {build}
+  "dune" {build}
   "irc-client"
   "lwt"
   "tls"
@@ -22,5 +22,3 @@ depends: [
 available: [
   ocaml-version >= "4.02.0"
 ]
-
-

@@ -1,0 +1,5 @@
+(library
+  (name irc_client_lwt)
+  (public_name irc-client-lwt)
+  (wrapped false)
+  (libraries result bytes irc-client lwt lwt.unix))
