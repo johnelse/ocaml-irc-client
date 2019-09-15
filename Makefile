@@ -16,6 +16,9 @@ install:
 uninstall:
 	dune uninstall
 
+watch:
+	@dune build @all --watch
+
 ARGS=
 
 example1:

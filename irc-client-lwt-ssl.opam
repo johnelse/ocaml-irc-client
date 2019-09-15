@@ -1,5 +1,5 @@
 opam-version: "1.2"
-authors: ["John Else" "Simon Cruanes"]
+authors: ["Simon Cruanes"]
 homepage: "https://github.com/johnelse/ocaml-irc-client"
 bug-reports: "https://github.com/johnelse/ocaml-irc-client/issues"
 dev-repo: "git://github.com/johnelse/ocaml-irc-client"
