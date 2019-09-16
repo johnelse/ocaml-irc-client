@@ -4,4 +4,5 @@
 
 (alias
   (name   runtest)
+  (package irc-client)
   (action (run ./test_unit_main.exe)))
