@@ -1,0 +1,24 @@
+opam-version: "1.2"
+authors: ["Simon Cruanes"]
+homepage: "https://github.com/johnelse/ocaml-irc-client"
+bug-reports: "https://github.com/johnelse/ocaml-irc-client/issues"
+dev-repo: "git://github.com/johnelse/ocaml-irc-client"
+maintainer: "john.else@gmail.com"
+build: [
+  ["dune" "build" "@install" "-p" name]
+]
+build-doc: [
+  ["dune" "build" "@doc" "-p" name]
+]
+build-test: [
+  ["dune" "runtest" "-p" name]
+]
+depends: [
+  "dune" {build}
+  "irc-client"
+  "lwt"
+  "lwt_ssl"
+]
+available: [
+  ocaml-version >= "4.02.0"
+]
