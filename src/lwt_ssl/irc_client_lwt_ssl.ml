@@ -21,11 +21,6 @@ module Io_lwt_ssl = struct
   type config = Config.t
   type inet_addr = Lwt_unix.inet_addr
 
-  (*
-  let default_config : Lwt_ssl.Tls.Config.client =
-    Tls.Config.client ~authenticator:X509.Authenticator.null ()
-     *)
-
   let open_socket ?(config=Config.default) addr port : file_descr t =
     let ssl = Ssl.create_context config.Config.proto Ssl.Client_context in
     if config.Config.check_certificate then (
