@@ -23,11 +23,11 @@ module Io_lwt_ssl = struct
 
   let open_socket ?(config=Config.default) addr port : file_descr t =
     let ssl = Ssl.create_context config.Config.proto Ssl.Client_context in
-    if config.Config.check_certificate then (
+    if config.Config.check_certificate then begin
       (* from https://github.com/johnelse/ocaml-irc-client/pull/21 *)
       Ssl.set_verify_depth ssl 3;
       Ssl.set_verify ssl [Ssl.Verify_peer] (Some Ssl.client_verify_callback);
-    );
+    end;
     let sock = Lwt_unix.socket Lwt_unix.PF_INET Lwt_unix.SOCK_STREAM 0 in
     let sockaddr = Lwt_unix.ADDR_INET (addr, port) in
     (* Printf.printf "connect socket…\n%!"; *)
