@@ -1,3 +1,7 @@
+0.6.2 (22-Sep-2019):
+ * Convert to dune
+ * Add lwt_ssl implementation
+
 0.6.1 (01-Aug-2018):
  * Correctly send messages starting with a colon
  * Remove some unused code
