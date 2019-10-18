@@ -210,32 +210,51 @@ module Make(Io: Irc_transport.IO) = struct
         next_line_ ~timeout ~connection:c
     end
 
-  let welcome_timeout = 30.
+  type nick_retry = {
+      mutable nick: string;
+      mutable tries: int;
+  }
 
-  let wait_for_welcome ~start ~connection =
+  let welcome_timeout = 30.
+  let max_nick_retries = 3
+
+  let wait_for_welcome ~start ~connection ~nick =
+    let nick_try = {
+        nick = nick;
+        tries = 1
+    } in
     let rec aux () =
       let now = Io.time () in
       let timeout = start +. welcome_timeout -. now in
       if timeout < 0.5 then return ()
       else begin
-        (* wait a bit more *)
-        let timeout = int_of_float (ceil timeout) in
-        assert (timeout > 0);
-        (*logf "wait for welcome message (%ds)" timeout >>= fun () ->*)
-        next_line_ ~timeout ~connection
-        >>= function
-        | Timeout
-        | End -> return ()
-        | Read line ->
-          begin match M.parse line with
-            | Result.Ok {M.command = M.Other ("001", _); _} ->
-              (* we received "RPL_WELCOME", i.e. 001 *)
-              return ()
-            | Result.Ok {M.command = M.PING (message1, message2); _} ->
-              (* server may ask for ping at any time *)
-              send_pong ~connection ~message1 ~message2 >>= aux
-            | _ -> aux()
-          end
+        if nick_try.tries > max_nick_retries then return ()
+        else begin
+          (* wait a bit more *)
+          let timeout = int_of_float (ceil timeout) in
+          assert (timeout > 0);
+          (* logf "wait for welcome message (%ds)" timeout >>= fun () -> *)
+          next_line_ ~timeout ~connection
+          >>= function
+          | Timeout
+          | End -> return ()
+          | Read line ->
+            begin match M.parse line with
+              | Result.Ok {M.command = M.Other ("001", _); _} ->
+                (* we received "RPL_WELCOME", i.e. 001 *)
+                return ()
+              | Result.Ok {M.command = M.PING (message1, message2); _} ->
+                (* server may ask for ping at any time *)
+                send_pong ~connection ~message1 ~message2 >>= aux
+              | Result.Ok {M.command = M.Other ("433", _); _} ->
+                (* we received "ERR_NICKNAMEINUSE" *)
+                nick_try.nick <- nick_try.nick ^ "_";
+                nick_try.tries <- nick_try.tries + 1;
+                logf "Nick name already in use, tying %s" nick_try.nick;
+                send_nick ~connection ~nick:nick_try.nick >>= aux
+              | _ -> aux ()
+            end
+        end
       end
     in
     aux () >>= fun () ->
@@ -253,7 +272,7 @@ module Make(Io: Irc_transport.IO) = struct
       end
       >>= fun () -> send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
-      >>= fun () -> wait_for_welcome ~start:(Io.time ()) ~connection
+      >>= fun () -> wait_for_welcome ~start:(Io.time ()) ~connection ~nick
       >>= fun () -> return connection)
 
   let connect_by_name
