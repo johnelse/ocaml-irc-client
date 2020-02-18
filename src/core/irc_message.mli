@@ -36,7 +36,7 @@ val nick : string -> t
 val user : username:string -> mode:int -> realname:string -> t
 val oper : name:string -> pass:string -> t
 val mode : nick:string -> mode:string -> t
-val quit : msg:string option -> t
+val quit : msg:string -> t
 val join : chans:string list -> keys:string list option -> t
 val join0 : t
 val part : chans:string list -> comment:string option -> t

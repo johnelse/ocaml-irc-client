@@ -34,7 +34,7 @@ module type CLIENT = sig
     target:string -> message:string -> unit Io.t
   (** Send the NOTICE command. *)
 
-  val send_quit : connection:connection_t -> unit Io.t
+  val send_quit : ?msg:string -> connection:connection_t -> unit Io.t
   (** Send the QUIT command. *)
 
   val send_user : connection:connection_t ->

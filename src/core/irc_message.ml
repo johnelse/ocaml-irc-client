@@ -37,7 +37,7 @@ let user ~username ~mode ~realname =
   make_ (USER [username; string_of_int mode; "*"; realname])
 let oper ~name ~pass = make_ (OPER (name, pass))
 let mode ~nick ~mode = make_ (MODE (nick, mode))
-let quit ~msg = make_ (QUIT (unwrap_ "" msg))
+let quit ~msg = make_ (QUIT msg)
 let join ~chans ~keys = make_ (JOIN (chans, unwrap_ [] keys))
 let join0 = make_ JOIN0
 let part ~chans ~comment = make_ (PART (chans, unwrap_ "" comment))
