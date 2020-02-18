@@ -250,7 +250,7 @@ module Make(Io: Irc_transport.IO) = struct
                 (* we received "ERR_NICKNAMEINUSE" *)
                 nick_try.nick <- nick_try.nick ^ "_";
                 nick_try.tries <- nick_try.tries + 1;
-                logf "Nick name already in use, tying %s" nick_try.nick;
+                logf "Nick name already in use, tying %s" nick_try.nick >>= fun () ->
                 send_nick ~connection ~nick:nick_try.nick >>= aux
               | _ -> aux ()
             end
@@ -393,7 +393,7 @@ module Make(Io: Irc_transport.IO) = struct
              log "connection terminated." >>= fun () ->
              return reconnect)
         (fun e ->
-           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun _ ->
+           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun () ->
            return true)
       >>= fun loop ->
       (* wait and reconnect *)
