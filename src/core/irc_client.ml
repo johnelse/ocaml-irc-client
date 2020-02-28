@@ -31,7 +31,7 @@ module type CLIENT = sig
     target:string -> message:string -> unit Io.t
   (** Send the NOTICE command. *)
 
-  val send_quit : connection:connection_t -> unit Io.t
+  val send_quit : ?msg:string -> connection:connection_t -> unit -> unit Io.t
   (** Send the QUIT command. *)
 
   val send_user : connection:connection_t ->
@@ -166,8 +166,8 @@ module Make(Io: Irc_transport.IO) = struct
   let send_notice ~connection ~target ~message =
     send ~connection (M.notice ~target message)
 
-  let send_quit ~connection =
-    send ~connection (M.quit ~msg:None)
+  let send_quit ?(msg="") ~connection () =
+    send ~connection (M.quit ~msg)
 
   let send_user ~connection ~username ~mode ~realname =
     let msg = M.user ~username ~mode ~realname in
@@ -250,7 +250,7 @@ module Make(Io: Irc_transport.IO) = struct
                 (* we received "ERR_NICKNAMEINUSE" *)
                 nick_try.nick <- nick_try.nick ^ "_";
                 nick_try.tries <- nick_try.tries + 1;
-                logf "Nick name already in use, tying %s" nick_try.nick;
+                logf "Nick name already in use, tying %s" nick_try.nick >>= fun () ->
                 send_nick ~connection ~nick:nick_try.nick >>= aux
               | _ -> aux ()
             end
@@ -393,7 +393,7 @@ module Make(Io: Irc_transport.IO) = struct
              log "connection terminated." >>= fun () ->
              return reconnect)
         (fun e ->
-           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun _ ->
+           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun () ->
            return true)
       >>= fun loop ->
       (* wait and reconnect *)
