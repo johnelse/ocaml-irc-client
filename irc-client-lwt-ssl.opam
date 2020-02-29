@@ -17,4 +17,5 @@ depends: [
   "lwt_ssl"
   "odoc" {with-doc}
   "ocaml" { >= "4.02.0" }
+  "ssl" { >= "0.5.8" }
 ]
