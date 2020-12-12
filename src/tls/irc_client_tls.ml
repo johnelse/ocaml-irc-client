@@ -15,7 +15,7 @@ module Io_tls = struct
   type config = Tls.Config.client
 
   let default_config : Tls.Config.client =
-    Tls.Config.client ~authenticator:X509.Authenticator.null ()
+    Tls.Config.client ~authenticator:(fun ~host:_ _ -> Ok None) ()
 
   let open_socket ?(config=default_config) addr port : file_descr t =
     Tls_lwt.connect_ext config (addr,port) >|= fun (ic,oc) ->
