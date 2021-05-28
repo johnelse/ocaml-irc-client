@@ -27,6 +27,7 @@ module Io_lwt_ssl = struct
       (* from https://github.com/johnelse/ocaml-irc-client/pull/21 *)
       Ssl.set_verify_depth ssl 3;
       Ssl.set_verify ssl [Ssl.Verify_peer] (Some Ssl.client_verify_callback);
+      Ssl.set_client_verify_callback_verbose true;
     end;
     let sock = Lwt_unix.socket Lwt_unix.PF_INET Lwt_unix.SOCK_STREAM 0 in
     let sockaddr = Lwt_unix.ADDR_INET (addr, port) in
