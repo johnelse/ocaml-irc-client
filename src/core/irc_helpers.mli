@@ -12,3 +12,4 @@ val handle_input : buffer:Buffer.t -> input:string -> string list
     return all whole lines present in the buffer, and reinitialise the buffer to
     contain only the substring which follows all the whole lines. *)
 
+module Log : Logs.LOG

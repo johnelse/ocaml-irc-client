@@ -3,6 +3,7 @@ open Lwt.Infix
 module Io_tls = struct
   type 'a t = 'a Lwt.t
   let (>>=) = Lwt.bind
+  let (>|=) = Lwt.(>|=)
   let return = Lwt.return
 
   type file_descr = {

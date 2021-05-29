@@ -2,4 +2,4 @@
   (name irc_client)
   (public_name irc-client)
   (wrapped false)
-  (libraries result bytes))
+  (libraries result bytes logs))

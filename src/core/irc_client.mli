@@ -102,9 +102,6 @@ module type CLIENT = sig
         (a closure over {!connect} or {!connect_by_name})
       @param callback the callback for {!listen}
       @param f the function to call after connection *)
-
-  val set_log : (string -> unit Io.t) -> unit
-  (** Set logging function *)
 end
 
 module Make : functor (Io: Irc_transport.IO) ->
