@@ -144,7 +144,7 @@ module Make(Io: Irc_transport.IO) = struct
 
   let send_auth_sasl ~connection ~user ~password =
     Log.debug (fun k->k"login using SASL with user=%S" user);
-    send_raw ~connection ~data:"CAP REQ sasl=plain" >>= fun () ->
+    send_raw ~connection ~data:"CAP REQ :sasl" >>= fun () ->
     send_raw ~connection ~data:"AUTHENTICATE PLAIN" >>= fun () ->
     let b64_login =
       Base64.encode_string @@
@@ -241,6 +241,7 @@ module Make(Io: Irc_transport.IO) = struct
           | Timeout
           | End -> return ()
           | Read line ->
+            Log.debug (fun k->k"read: %s" line);
             begin match M.parse line with
               | Result.Ok {M.command = M.Other ("001", _); _} ->
                 (* we received "RPL_WELCOME", i.e. 001 *)
