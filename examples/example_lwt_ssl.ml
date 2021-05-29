@@ -52,6 +52,7 @@ let options = Arg.align
   [ "-host", Arg.Set_string host, " set remove server host name"
   ; "-port", Arg.Set_int port, " set remote server port"
   ; "-chan", Arg.Set_string channel, " channel to join"
+  ; "-nick", Arg.Set_string nick, " nickname"
   ; "-check", Arg.Set check_certif, " check certificate"
   ; "-no-check", Arg.Clear check_certif, " do not check certificate"
   ; "-debug", Arg.Set debug, " enable debug"
