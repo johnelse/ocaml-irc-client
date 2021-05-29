@@ -43,20 +43,25 @@ module type CLIENT = sig
 
   val connect :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     addr:Io.inet_addr -> port:int -> nick:string -> unit ->
     connection_t Io.t
   (** Connect to an IRC server at address [addr]. The PASS command will be
-      sent if [password] is not None. *)
+      sent if [password] is not None and if [sasl] is [false].
+      @param sasl if true, try to use SASL (plain) authentication with the server.
+        This is an IRCv3 extension and might not be supported everywhere; it
+        might also require a secure transport (see {!Irc_client_lwt_ssl}
+        or {!Irc_client_tls} for example). This param exists @since 0.7.
+  *)
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like
       {!connect}. Returns [None] if no IP could be found for the given
-      name. *)
+      name. See {!connect} for more details. *)
 
   (** Information on keeping the connection alive *)
   type keepalive = {

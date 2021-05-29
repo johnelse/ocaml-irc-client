@@ -42,7 +42,7 @@ module type CLIENT = sig
 
   val connect :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     addr:Io.inet_addr -> port:int -> nick:string -> unit ->
     connection_t Io.t
   (** Connect to an IRC server at address [addr]. The PASS command will be
@@ -50,12 +50,12 @@ module type CLIENT = sig
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like
       {!connect}. Returns [None] if no IP could be found for the given
-      name. *)
+      name. See {!connect} for more details. *)
 
   (** Information on keeping the connection alive *)
   type keepalive = {
@@ -141,6 +141,17 @@ module Make(Io: Irc_transport.IO) = struct
 
   let send_nick ~connection ~nick =
     send ~connection (M.nick nick)
+
+  let send_auth_sasl ~connection ~user ~password =
+    Log.debug (fun k->k"login using SASL with user=%S" user);
+    send_raw ~connection ~data:"CAP REQ sasl=plain" >>= fun () ->
+    send_raw ~connection ~data:"AUTHENTICATE PLAIN" >>= fun () ->
+    let b64_login =
+      Base64.encode_string @@
+      Printf.sprintf "%s\x00%s\x00%s" user user password
+    in
+    let data = Printf.sprintf "AUTHENTICATE %s" b64_login in
+    send_raw ~connection ~data
 
   let send_pass ~connection ~password =
     send ~connection (M.pass password)
@@ -252,28 +263,39 @@ module Make(Io: Irc_transport.IO) = struct
     Log.info (fun k->k"finished waiting for welcome msg")
 
   let connect
-      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ?config ~addr ~port ~nick () =
+      ?username ?(mode=0) ?(realname="irc-client")
+      ?password ?(sasl=true) ?config ~addr ~port ~nick () =
     Io.open_socket ?config addr port >>= (fun sock ->
       let connection = mk_connection_ sock in
+
+      let cap_end = ref false in
       begin
-        match password with
-        | Some password -> send_pass ~connection ~password
-        | None -> return ()
+        match username, password with
+        | Some user, Some password when sasl ->
+          cap_end := true;
+          send_auth_sasl ~connection ~user ~password
+        | _, Some password -> send_pass ~connection ~password
+        | _ -> return ()
       end
-      >>= fun () -> send_nick ~connection ~nick
+      >>= fun () ->
+      let username = match username with Some u -> u | None -> "ocaml-irc-client" in
+      send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () ->
+      begin
+        if !cap_end then send_raw ~connection ~data:"CAP END" else return()
+      end
       >>= fun () -> wait_for_welcome ~start:(Io.time ()) ~connection ~nick
       >>= fun () -> return connection)
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ?config ~server ~port ~nick () =
+      ?password ?sasl ?config ~server ~port ~nick () =
     Io.gethostbyname server
     >>= (function
       | [] -> Io.return None
       | addr :: _ ->
-        connect ~addr ~port ~username ~mode ~realname ~nick ?password ?config ()
+        connect ~addr ~port ~username ~mode ~realname ~nick ?password ?sasl ?config ()
         >>= fun connection -> Io.return (Some connection))
 
   (** Information on keeping the connection alive *)
