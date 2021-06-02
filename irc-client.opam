@@ -15,7 +15,7 @@ depends: [
   "base-bytes"
   "result"
   "logs"
-  "base64"
+  "base64" {>= "3.0.0"}
   "ounit" {with-test}
   "odoc" {with-doc}
   "ocaml" { >= "4.02.0" }
