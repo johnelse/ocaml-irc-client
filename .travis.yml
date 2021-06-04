@@ -8,7 +8,6 @@ env:
   - PINS="irc-client:. irc-client-unix:. irc-client-lwt:."
   - DISTRO="ubuntu-16.04"
   matrix:
-  - PACKAGE="irc-client" OCAML_VERSION="4.02.3"
   - PACKAGE="irc-client" OCAML_VERSION="4.03"
   - PACKAGE="irc-client" OCAML_VERSION="4.04"
   - PACKAGE="irc-client" OCAML_VERSION="4.06"
