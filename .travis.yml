@@ -6,7 +6,7 @@ services:
 env:
   global:
   - PINS="irc-client:. irc-client-unix:. irc-client-lwt:."
-  - DISTRO="ubuntu-16.04"
+  - DISTRO="ubuntu-20.04"
   matrix:
   - PACKAGE="irc-client" OCAML_VERSION="4.03"
   - PACKAGE="irc-client" OCAML_VERSION="4.04"
