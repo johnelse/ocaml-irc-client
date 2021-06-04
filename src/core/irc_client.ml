@@ -1,3 +1,5 @@
+module Log = Irc_helpers.Log
+
 module type CLIENT = sig
   module Io : sig
     type 'a t
@@ -40,7 +42,7 @@ module type CLIENT = sig
 
   val connect :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     addr:Io.inet_addr -> port:int -> nick:string -> unit ->
     connection_t Io.t
   (** Connect to an IRC server at address [addr]. The PASS command will be
@@ -48,12 +50,12 @@ module type CLIENT = sig
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?config:Io.config ->
+    ?sasl:bool -> ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like
       {!connect}. Returns [None] if no IP could be found for the given
-      name. *)
+      name. See {!connect} for more details. *)
 
   (** Information on keeping the connection alive *)
   type keepalive = {
@@ -99,9 +101,6 @@ module type CLIENT = sig
         (a closure over {!connect} or {!connect_by_name})
       @param callback the callback for {!listen}
       @param f the function to call after connection *)
-
-  val set_log : (string -> unit Io.t) -> unit
-  (** Set logging function *)
 end
 
 module Make(Io: Irc_transport.IO) = struct
@@ -116,15 +115,6 @@ module Make(Io: Irc_transport.IO) = struct
     mutable terminated: bool;
   }
 
-  (* logging *)
-
-  let log_ : (string -> unit Io.t) ref = ref (fun _ -> Io.return ())
-  let set_log f = log_ := f
-
-  let start_time = Io.time()
-  let log s = !log_ (Printf.sprintf "[%.2f] %s" (Io.time () -. start_time) s)
-  let logf s = Printf.ksprintf log s
-
   open Io
 
   let rec really_write ~connection ~data ~offset ~length =
@@ -136,6 +126,7 @@ module Make(Io: Irc_transport.IO) = struct
           ~length:(length - chars_written))
 
   let send_raw ~connection ~data =
+    Log.debug (fun k->k"send: %s" data);
     let formatted_data = Bytes.unsafe_of_string (Printf.sprintf "%s\r\n" data) in
     let length = Bytes.length formatted_data in
     really_write ~connection ~data:formatted_data ~offset:0 ~length
@@ -150,6 +141,17 @@ module Make(Io: Irc_transport.IO) = struct
 
   let send_nick ~connection ~nick =
     send ~connection (M.nick nick)
+
+  let send_auth_sasl ~connection ~user ~password =
+    Log.debug (fun k->k"login using SASL with user=%S" user);
+    send_raw ~connection ~data:"CAP REQ :sasl" >>= fun () ->
+    send_raw ~connection ~data:"AUTHENTICATE PLAIN" >>= fun () ->
+    let b64_login =
+      Base64.encode_string @@
+      Printf.sprintf "%s\x00%s\x00%s" user user password
+    in
+    let data = Printf.sprintf "AUTHENTICATE %s" b64_login in
+    send_raw ~connection ~data
 
   let send_pass ~connection ~password =
     send ~connection (M.pass password)
@@ -239,6 +241,7 @@ module Make(Io: Irc_transport.IO) = struct
           | Timeout
           | End -> return ()
           | Read line ->
+            Log.debug (fun k->k"read: %s" line);
             begin match M.parse line with
               | Result.Ok {M.command = M.Other ("001", _); _} ->
                 (* we received "RPL_WELCOME", i.e. 001 *)
@@ -250,39 +253,50 @@ module Make(Io: Irc_transport.IO) = struct
                 (* we received "ERR_NICKNAMEINUSE" *)
                 nick_try.nick <- nick_try.nick ^ "_";
                 nick_try.tries <- nick_try.tries + 1;
-                logf "Nick name already in use, tying %s" nick_try.nick >>= fun () ->
+                Log.err (fun k->k"Nick name already in use, tying %s" nick_try.nick);
                 send_nick ~connection ~nick:nick_try.nick >>= aux
               | _ -> aux ()
             end
         end
       end
     in
-    aux () >>= fun () ->
-    log "finished waiting for welcome msg"
+    aux () >|= fun () ->
+    Log.info (fun k->k"finished waiting for welcome msg")
 
   let connect
-      ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ?config ~addr ~port ~nick () =
+      ?username ?(mode=0) ?(realname="irc-client")
+      ?password ?(sasl=true) ?config ~addr ~port ~nick () =
     Io.open_socket ?config addr port >>= (fun sock ->
       let connection = mk_connection_ sock in
+
+      let cap_end = ref false in
       begin
-        match password with
-        | Some password -> send_pass ~connection ~password
-        | None -> return ()
+        match username, password with
+        | Some user, Some password when sasl ->
+          cap_end := true;
+          send_auth_sasl ~connection ~user ~password
+        | _, Some password -> send_pass ~connection ~password
+        | _ -> return ()
       end
-      >>= fun () -> send_nick ~connection ~nick
+      >>= fun () ->
+      let username = match username with Some u -> u | None -> "ocaml-irc-client" in
+      send_nick ~connection ~nick
       >>= fun () -> send_user ~connection ~username ~mode ~realname
+      >>= fun () ->
+      begin
+        if !cap_end then send_raw ~connection ~data:"CAP END" else return()
+      end
       >>= fun () -> wait_for_welcome ~start:(Io.time ()) ~connection ~nick
       >>= fun () -> return connection)
 
   let connect_by_name
       ?(username="irc-client") ?(mode=0) ?(realname="irc-client")
-      ?password ?config ~server ~port ~nick () =
+      ?password ?sasl ?config ~server ~port ~nick () =
     Io.gethostbyname server
     >>= (function
       | [] -> Io.return None
       | addr :: _ ->
-        connect ~addr ~port ~username ~mode ~realname ~nick ?password ?config ()
+        connect ~addr ~port ~username ~mode ~realname ~nick ?password ?sasl ?config ()
         >>= fun connection -> Io.return (Some connection))
 
   (** Information on keeping the connection alive *)
@@ -317,7 +331,7 @@ module Make(Io: Irc_transport.IO) = struct
         (* send "ping" if active mode and it's been long enough *)
         if time_til_ping < 0. then (
           state.last_active_ping <- now;
-          log "send ping to server..." >>= fun () ->
+          Log.debug (fun k->k"send ping to server...");
           (* try to send a ping, but ignore errors *)
           Io.catch
             (fun () -> send_ping ~connection ~message1:"ping" ~message2:"")
@@ -342,18 +356,21 @@ module Make(Io: Irc_transport.IO) = struct
       >>= function
       | Timeout ->
         state.finished <- true;
-        log "client timeout"
+        Log.info (fun k->k"client timeout");
+        Io.return ()
       | End ->
         state.finished <- true;
-        log "connection closed"
+        Log.info (fun k->k"connection closed");
+        Io.return ()
       | Read line ->
         (* update "last_seen" field *)
+        Log.debug (fun k->k"read: %s" line);
         let now = Io.time() in
         state.last_seen <- max now state.last_seen;
         begin match M.parse line with
           | Result.Ok {M.command = M.PING (message1, message2); _} ->
             (* Handle pings without calling the callback. *)
-            log "reply pong to server" >>= fun () ->
+            Log.debug (fun k->k"reply pong to server");
             send_pong ~connection ~message1 ~message2
           | Result.Ok {M.command = M.PONG _; _} ->
             (* active response from server *)
@@ -386,20 +403,22 @@ module Make(Io: Irc_transport.IO) = struct
       Io.catch
         (fun () ->
            connect () >>= function
-           | None -> log "could not connect" >>= fun () -> return true
+           | None -> Log.info (fun k->k"could not connect"); return true
            | Some connection ->
              f connection >>= fun () ->
              listen ?keepalive ~connection ~callback () >>= fun () ->
-             log "connection terminated." >>= fun () ->
+             Log.info (fun k->k"connection terminated.");
              return reconnect)
         (fun e ->
-           logf "reconnect_loop: exception %s" (Printexc.to_string e) >>= fun () ->
+           Log.err (fun k->k"reconnect_loop: exception %s" (Printexc.to_string e));
            return true)
       >>= fun loop ->
       (* wait and reconnect *)
       Io.sleep after >>= fun () ->
-      if loop then log "try to reconnect..." >>= aux
-      else return ()
+      if loop then (
+        Log.info (fun k->k"try to reconnect...");
+        aux()
+      ) else return ()
     in
     aux ()
 end

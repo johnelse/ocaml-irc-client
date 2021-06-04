@@ -45,3 +45,4 @@ let handle_input ~buffer ~input =
   (* Return the whole lines extracted from the buffer. *)
   whole_lines
 
+module Log = (val Logs.src_log (Logs.Src.create ~doc:"irc-client low level logging" "irc-client"))

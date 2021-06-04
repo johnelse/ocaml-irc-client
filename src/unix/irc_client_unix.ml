@@ -1,6 +1,7 @@
 module Io_unix = struct
   type 'a t = 'a
   let (>>=) x f = f x
+  let (>|=) x f = f x
   let return x = x
 
   type file_descr = Unix.file_descr
