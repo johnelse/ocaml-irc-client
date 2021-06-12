@@ -1,5 +1,3 @@
-open Lwt.Infix
-
 module Io_tls = struct
   type 'a t = 'a Lwt.t
   let (>>=) = Lwt.bind
