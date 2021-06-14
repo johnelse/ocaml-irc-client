@@ -1,6 +1,6 @@
 IRC client library, supporting Lwt and Unix blocking IO.
 
-[![Build status](https://travis-ci.org/johnelse/ocaml-irc-client.png?branch=master)](https://travis-ci.org/johnelse/ocaml-irc-client)
+[![Build status](https://github.com/johnelse/ocaml-irc-client/actions/workflows/workflow.yml/badge.svg)](https://github.com/johnelse/ocaml-irc-client/actions)
 [![Coverage Status](https://coveralls.io/repos/johnelse/ocaml-irc-client/badge.svg?branch=master)](https://coveralls.io/r/johnelse/ocaml-irc-client?branch=master)
 [![API reference](https://img.shields.io/badge/docs-API_reference-blue.svg)](https://johnelse.github.io/ocaml-irc-client)
 
