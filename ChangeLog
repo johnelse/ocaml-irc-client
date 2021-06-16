@@ -1,3 +1,10 @@
+0.7.0 (15-Jun-2021):
+ * Switch CI to github actions
+ * Add support for SASL authentication
+ * Optionally send a message with the QUIT command
+ * Try appending _ to nick if nick is in use
+ * Move from travis to github actions
+
 0.6.2 (22-Sep-2019):
  * Convert to dune
  * Add lwt_ssl implementation
