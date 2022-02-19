@@ -14,8 +14,7 @@ depends: [
   "dune" {>= "1.6"}
   "irc-client"
   "lwt"
-  "tls"
-  "x509" {>= "0.10.0"}
+  "tls" {>= "0.15.0"}
   "odoc" {with-doc}
   "ocaml" { >= "4.02.0" }
 ]
