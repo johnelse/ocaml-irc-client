@@ -409,9 +409,13 @@ module Make(Io: Irc_transport.IO) = struct
              listen ?keepalive ~connection ~callback () >>= fun () ->
              Log.info (fun k->k"connection terminated.");
              return reconnect)
-        (fun e ->
-           Log.err (fun k->k"reconnect_loop: exception %s" (Printexc.to_string e));
-           return true)
+        (function
+          | Exit ->
+            Log.info (fun k->k"stopping the connection loop");
+            return false
+          | e ->
+            Log.err (fun k->k"reconnect_loop: exception %s" (Printexc.to_string e));
+            return true)
       >>= fun loop ->
       (* wait and reconnect *)
       Io.sleep after >>= fun () ->

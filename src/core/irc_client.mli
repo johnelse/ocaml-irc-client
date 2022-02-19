@@ -101,7 +101,8 @@ module type CLIENT = sig
     unit Io.t
   (** A combination of {!connect} and {!listen} that, every time
       the connection is terminated, tries to start a new one
-      after [after] seconds.
+      after [after] seconds. It stops reconnecting if the exception
+      [Exit] is raised.
       @param after time before trying to reconnect
       @param connect how to reconnect
         (a closure over {!connect} or {!connect_by_name})
