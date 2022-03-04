@@ -43,7 +43,7 @@ module type CLIENT = sig
 
   val connect :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?sasl:[`None | `Plain | `External] -> ?config:Io.config ->
+    ?sasl:[`Plain | `External] option -> ?config:Io.config ->
     addr:Io.inet_addr -> port:int -> nick:string -> unit ->
     connection_t Io.t
   (** Connect to an IRC server at address [addr]. The PASS command will be
@@ -56,7 +56,7 @@ module type CLIENT = sig
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?sasl:[`None | `Plain | `External]-> ?config:Io.config ->
+    ?sasl:[`Plain | `External] option -> ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like

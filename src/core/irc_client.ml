@@ -1,6 +1,6 @@
 module Log = Irc_helpers.Log
 
-type sasl = [`None | `Plain | `External]
+type sasl = [`Plain | `External]
 
 module type CLIENT = sig
   module Io : sig
@@ -44,7 +44,7 @@ module type CLIENT = sig
 
   val connect :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?sasl:sasl -> ?config:Io.config ->
+    ?sasl:sasl option -> ?config:Io.config ->
     addr:Io.inet_addr -> port:int -> nick:string -> unit ->
     connection_t Io.t
   (** Connect to an IRC server at address [addr]. The PASS command will be
@@ -52,7 +52,7 @@ module type CLIENT = sig
 
   val connect_by_name :
     ?username:string -> ?mode:int -> ?realname:string -> ?password:string ->
-    ?sasl:sasl -> ?config:Io.config ->
+    ?sasl:sasl option -> ?config:Io.config ->
     server:string -> port:int -> nick:string -> unit ->
     connection_t option Io.t
   (** Try to resolve the [server] name using DNS, otherwise behaves like
@@ -274,20 +274,20 @@ module Make(Io: Irc_transport.IO) = struct
 
   let connect
       ?username ?(mode=0) ?(realname="irc-client")
-      ?password ?(sasl=`Plain) ?config ~addr ~port ~nick () =
+      ?password ?(sasl=Some `Plain) ?config ~addr ~port ~nick () =
     Io.open_socket ?config addr port >>= (fun sock ->
       let connection = mk_connection_ sock in
 
       let cap_end = ref false in
       begin
         match username, password, sasl with
-        | Some user, Some password, `Plain ->
+        | Some user, Some password, Some `Plain ->
           cap_end := true;
           send_auth_sasl_plain ~connection ~user ~password
-        | Some user, _, `External ->
+        | Some user, _, Some `External ->
           cap_end := true;
           send_auth_sasl_external ~connection ~user
-        | _, Some password, _ -> send_pass ~connection ~password
+        | _, Some password, None -> send_pass ~connection ~password
         | _ -> return ()
       end
       >>= fun () ->
