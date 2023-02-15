@@ -1,3 +1,6 @@
+Unreleased
+* tls.lwt is now tls-lwt
+
 0.7.0 (15-Jun-2021):
  * Switch CI to github actions
  * Add support for SASL authentication
