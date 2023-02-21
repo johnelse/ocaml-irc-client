@@ -1,3 +1,8 @@
+0.7.1 (21-Feb-2023):
+ * Fix logging type when requested nick is in use
+ * Stop reconnection loop on raising Exit
+ * irc-client-tls now depends on tls-lwt instead of tls.lwt
+
 0.7.0 (15-Jun-2021):
  * Switch CI to github actions
  * Add support for SASL authentication
