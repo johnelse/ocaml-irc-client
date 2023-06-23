@@ -8,10 +8,13 @@ Build dependencies
 ------------------
 
 * [lwt](http://ocsigen.org/lwt/) (optional)
-* [oasis](https://github.com/ocaml/oasis)
-* [oUnit](http://ounit.forge.ocamlcore.org/)
+* [dune](https://github.com/ocaml/dune)
+* [logs](https://github.com/dbuenzli/logs)
 
-The latest tagged version is available via [opam](http://opam.ocamlpro.com): `opam install irc-client`
+To run tests:
+* [ounit](http://ounit.forge.ocamlcore.org/)
+
+The latest tagged version is available via [opam](http://opam.ocaml.org): `opam install irc-client`
 
 Usage
 -----
